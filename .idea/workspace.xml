@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="update">
+    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="step 1 &amp; 2 updated">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/Resources/StopWords.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/Resources/Trec_microblog11-qrels.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/TokenDoc.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/App.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Index.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,12 +29,33 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectId" id="1zbI4aB9frZqBxMpOMjOXbFULAC" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.Java" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="B:\_Programming\CSI4106Assignment1\src\main\Resources" />
+      <recent name="B:\_Programming\CSI4106Assignment1\src\main" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Java" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="main.Main" />
+      <module name="CSI4106Assignment1" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -37,6 +66,7 @@
       <option name="presentableId" value="Default" />
       <updated>1634410172203</updated>
       <workItem from="1634410175477" duration="347000" />
+      <workItem from="1634410537088" duration="10151000" />
     </task>
     <task id="LOCAL-00001" summary="Rebase">
       <created>1634410265769</created>
@@ -66,7 +96,14 @@
       <option name="project" value="LOCAL" />
       <updated>1634410463442</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="update">
+      <created>1634410547949</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1634410547949</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -82,11 +119,18 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Rebase" />
     <MESSAGE value=".idea update" />
     <MESSAGE value="update" />
-    <option name="LAST_COMMIT_MESSAGE" value="update" />
+    <MESSAGE value="step 1 &amp; 2 updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="step 1 &amp; 2 updated" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
