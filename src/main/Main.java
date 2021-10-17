@@ -20,7 +20,7 @@ public class Main {
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
 
             index = new Index(tokenArr);  // indexing
-            System.out.println(index); // Warning - huge to print
+            System.out.println(index.getWeight("dinner", "34952194402811904"));
         } catch (NullPointerException | IOException err) {
             System.out.println("File not found or Null pointer exception occurred : " + err);
             throw err;
