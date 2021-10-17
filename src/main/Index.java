@@ -3,8 +3,8 @@ package main;
 import java.util.*;
 
 /**
- * @author  Kangwei Liao
- *
+ * @author Kangwei Liao
+ * <p>
  * Represents inverted indexing, stored using hashmap.
  */
 public class Index {
@@ -22,12 +22,10 @@ public class Index {
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             for (String token : tokens) {
                 Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc)); // (docID, TF) pair for a term
-                if (!termExist(token)) {
-                    // if token not in index, put the term into the hashmap:
+                if (!termExist(token)) { // if token not in index, put the term into the hashmap
                     termMap.put(token, new LinkedList<>(List.of(tmp)));
                     freqMap.put(token, 1);
-                } else {
-                    // if token in index, append the docID, tf value to the corresponding term
+                } else { // if token in index, append the docID, tf value to the corresponding term
                     freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
                     termMap.get(token).add(tmp);
                 }
@@ -37,7 +35,7 @@ public class Index {
 
     /**
      * @param token a word
-     * @param doc a {TokenDoc} instance
+     * @param doc   a {TokenDoc} instance
      * @return the TF value of this word in this document
      */
     private double computeTF(String token, TokenDoc doc) {
