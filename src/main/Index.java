@@ -22,6 +22,7 @@ public class Index {
                 }
             }
         }
+
     }
 
     public boolean exist(String term) {
