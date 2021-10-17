@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="warning fixed">
-      <change afterPath="$PROJECT_DIR$/src/main/Similar.java" afterDir="false" />
+    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="comments update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Index.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/TokenDoc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/TokenDoc.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -63,6 +64,7 @@
       <workItem from="1634410175477" duration="347000" />
       <workItem from="1634410537088" duration="10482000" />
       <workItem from="1634445039012" duration="16932000" />
+      <workItem from="1634482209762" duration="8445000" />
     </task>
     <task id="LOCAL-00001" summary="Rebase">
       <created>1634410265769</created>
@@ -127,7 +129,28 @@
       <option name="project" value="LOCAL" />
       <updated>1634467301708</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="update">
+      <created>1634482291571</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1634482291571</updated>
+    </task>
+    <task id="LOCAL-00011" summary="comments update">
+      <created>1634484566121</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1634484566121</updated>
+    </task>
+    <task id="LOCAL-00012" summary="comments update">
+      <created>1634484637072</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1634484637072</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -149,11 +172,12 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Rebase" />
     <MESSAGE value=".idea update" />
-    <MESSAGE value="update" />
     <MESSAGE value="step 1 &amp; 2 updated" />
     <MESSAGE value="step 1 &amp; 2 finished" />
     <MESSAGE value="warning fixed" />
-    <option name="LAST_COMMIT_MESSAGE" value="warning fixed" />
+    <MESSAGE value="update" />
+    <MESSAGE value="comments update" />
+    <option name="LAST_COMMIT_MESSAGE" value="comments update" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
