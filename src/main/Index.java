@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Index {
 
-    private HashMap<String, LinkedList<Map.Entry<String, Double>>> termMap; // HashMap<term, LinkedList<Map.Entry<docID, weight>>>
-    private HashMap<String, Integer> freqMap; // HashMap<term, frequency>
+    private final HashMap<String, LinkedList<Map.Entry<String, Double>>> termMap; // HashMap<term, LinkedList<Map.Entry<docID, weight>>>
+    private final HashMap<String, Integer> freqMap; // HashMap<term, frequency>
 
     public Index(ArrayList<TokenDoc> docs) {
         termMap = new HashMap<>();
@@ -13,14 +13,14 @@ public class Index {
         for (TokenDoc doc : docs) {
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             for (String token : tokens) {
+                Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc));
                 if (!termExist(token)) {
                     // if token not in index, put the term into the hashmap:
-                    termMap.put(token, new LinkedList<>());
+                    termMap.put(token, new LinkedList<>(List.of(tmp)));
                     freqMap.put(token, 1);
                 } else {
                     // if token in index, append the docID, tf value to the corresponding term
                     freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
-                    Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc));
                     termMap.get(token).add(tmp);
                 }
             }

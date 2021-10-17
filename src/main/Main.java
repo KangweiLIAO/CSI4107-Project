@@ -4,17 +4,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Objects;
-
-class Pair {
-    // Return a map entry (key-value pair) from the specified values
-    public <T, U> Map.Entry<T, U> of(T first, U second) {
-        return new AbstractMap.SimpleEntry<>(first, second);
-    }
-}
 
 public class Main {
 
@@ -26,7 +17,7 @@ public class Main {
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
 
             Index index = new Index(tokenArr);  // indexing
-//            System.out.println(index); // Warning - huge to print
+            System.out.println(index); // Warning - huge to print
         } catch (NullPointerException | IOException err) {
             System.out.println("File not found or Null pointer exception occurred : " + err);
             throw err;
