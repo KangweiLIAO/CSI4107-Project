@@ -1,5 +1,7 @@
 package main;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 
 /**
@@ -9,6 +11,7 @@ import java.util.*;
  */
 public class Index {
 
+    private final int numOfDocs;
     private final HashMap<String, LinkedList<Map.Entry<String, Double>>> termMap; // HashMap<term, LinkedList<Map.Entry<docID, weight>>>
     private final HashMap<String, Integer> freqMap; // HashMap<term, frequency>
 
@@ -16,11 +19,14 @@ public class Index {
      * @param docs a list of {TokenDoc} instance to initialize an inverted index instance
      */
     public Index(ArrayList<TokenDoc> docs) {
+        numOfDocs = docs.size();
         termMap = new HashMap<>();
         freqMap = new HashMap<>();
         for (TokenDoc doc : docs) {
+            // System.out.println("34952194402811904");
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             for (String token : tokens) {
+                token = token.toLowerCase();
                 Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc)); // (docID, TF) pair for a term
                 if (!termExist(token)) { // if token not in index, put the term into the hashmap
                     termMap.put(token, new LinkedList<>(List.of(tmp)));
@@ -34,16 +40,27 @@ public class Index {
     }
 
     /**
-     * @param token a word
-     * @param doc   a {TokenDoc} instance
+     * @param term a word
+     * @param doc  a {TokenDoc} instance
      * @return the TF value of this word in this document
      */
-    private double computeTF(String token, TokenDoc doc) {
+    private double computeTF(String term, TokenDoc doc) {
         double nij = 0;
         for (String words : doc.getTokens()) {
-            if (words.equalsIgnoreCase(token)) nij++;
+            if (words.equalsIgnoreCase(term)) nij++;
         }
-        return nij / doc.getTokens().size();
+        return BigDecimal.valueOf(nij / doc.getTokens().size())
+                .setScale(3, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    /**
+     * @param term  a word
+     * @param docID a specified docID
+     * @return the tf-idf weight of the word in docID
+     */
+    public double getWeight(String term, String docID) {
+        term = term.toLowerCase();
+        return getTF(term, docID) * ((double) numOfDocs / getFrequency(term));
     }
 
     /**
@@ -51,7 +68,7 @@ public class Index {
      * @return true if the term exist in inverted index, false otherwise.
      */
     public boolean termExist(String term) {
-        return termMap.getOrDefault(term, null) != null;
+        return termMap.getOrDefault(term.toLowerCase(), null) != null;
     }
 
     /**
@@ -61,12 +78,12 @@ public class Index {
      * @throws NullPointerException if the word is not found in inverted index map
      */
     public Double getTF(String term, String docID) throws NullPointerException {
-        for (Map.Entry<String, Double> pair : termMap.get(term)) {
+        for (Map.Entry<String, Double> pair : termMap.get(term.toLowerCase())) {
             if (pair.getKey().equals(docID)) {
                 return pair.getValue();
             }
         }
-        throw new NullPointerException("The specified term not found in termMap.");
+        return 0.;
     }
 
     /**
@@ -74,8 +91,8 @@ public class Index {
      * @return how many times this word appears in documents
      * @throws NullPointerException if the word is not found in inverted index map
      */
-    public Integer getFreq(String term) throws NullPointerException {
-        return freqMap.get(term);
+    public Integer getFrequency(String term) throws NullPointerException {
+        return freqMap.get(term.toLowerCase());
     }
 
     /**
@@ -84,11 +101,11 @@ public class Index {
      * @throws NullPointerException if the word is not found in inverted index map
      */
     public LinkedList<Map.Entry<String, Double>> getPosting(String term) throws NullPointerException {
-        return termMap.get(term);
+        return termMap.get(term.toLowerCase());
     }
 
     /**
-     * @return the length of the inverted index map
+     * @return the length (number of terms) of the inverted index map
      */
     public int length() {
         return termMap.size();
@@ -99,7 +116,7 @@ public class Index {
         StringBuilder result = new StringBuilder();
         for (Map.Entry<String, LinkedList<Map.Entry<String, Double>>> entry : termMap.entrySet()) {
             String term = entry.getKey();
-            result.append("{").append(term).append("(").append(getFreq(term)).append(") : ");
+            result.append("{").append(term).append("(").append(getFrequency(term)).append(") : ");
             for (Map.Entry<String, Double> pair : entry.getValue()) {
                 result.append("[").append(pair).append("], ");
             }
