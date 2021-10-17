@@ -18,4 +18,12 @@ public class TokenDoc {
     public String getID() {
         return docID;
     }
+
+    @Override
+    public String toString() {
+        return "TokenDoc{" +
+                "docID='" + docID + '\'' +
+                ", tokenDocTerms=" + tokenDocTerms +
+                '}';
+    }
 }
