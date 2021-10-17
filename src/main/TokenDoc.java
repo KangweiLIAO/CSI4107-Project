@@ -7,23 +7,19 @@ import java.io.IOException;
 import java.util.*;
 
 public class TokenDoc {
-    String docID;
-    ArrayList<String> TokenDocTerms;
+    private final String docID;
+    private final ArrayList<String> tokenDocTerms;
 
     public TokenDoc(String id, ArrayList<String> terms) {
         docID = id;
-        TokenDocTerms = terms;
+        tokenDocTerms = terms;
     }
 
-    public void setID(String id) {
-        this.docID = id;
+    public ArrayList<String> getTokens() {
+        return tokenDocTerms;
     }
 
     public String getID() {
         return docID;
-    }
-
-    public ArrayList<String> getTokens() {
-        return TokenDocTerms;
     }
 }
