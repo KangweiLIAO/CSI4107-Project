@@ -69,7 +69,8 @@ public class Index {
      * @return the posting of the word
      * @throws NullPointerException if the word is not found in inverted index map
      */
-    public LinkedList<Map.Entry<String, Double>> getPosting(String term) throws NullPointerException {
+    public LinkedList<Map.Entry<String, Double>> getPosting(String term)
+            throws NullPointerException {
         return termMap.get(term.toLowerCase());
     }
 
@@ -80,7 +81,8 @@ public class Index {
      */
     public double getWeight(String term, String docID) {
         term = term.toLowerCase();
-        return getTF(term, docID) * ((double) numOfDocs / getFrequency(term));
+        return getTF(term, docID) * Main.log(10
+                , (double) numOfDocs / getFrequency(term));
     }
 
     /**
