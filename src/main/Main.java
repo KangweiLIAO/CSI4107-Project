@@ -4,10 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+
+import static java.util.Collections.sort;
 
 public class Main {
 
@@ -70,5 +69,14 @@ public class Main {
             stopWords.add(line);
         }
         return stopWords;
+    }
+
+    /**
+     * @param base log base
+     * @param n a number n
+     * @return the log_base(n)
+     */
+    public static double log(int base, double n){
+        return Math.log(n) / Math.log(base);
     }
 }
