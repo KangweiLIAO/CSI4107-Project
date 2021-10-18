@@ -14,6 +14,7 @@ public class Index {
     private final int numOfDocs;
     private final HashMap<String, LinkedList<Map.Entry<String, Double>>> termMap; // HashMap<term, LinkedList<Map.Entry<docID, weight>>>
     private final HashMap<String, Integer> freqMap; // HashMap<term, frequency>
+    private final HashMap<String, TokenDoc> docMap; // HashMap<term, docSize>
 
     /**
      * @param docs a list of {TokenDoc} instance to initialize an inverted index instance
@@ -22,8 +23,10 @@ public class Index {
         numOfDocs = docs.size();
         termMap = new HashMap<>();
         freqMap = new HashMap<>();
+        docMap = new HashMap<>();
         for (TokenDoc doc : docs) {
             // System.out.println("34952194402811904");
+            docMap.put(doc.getID(), doc);
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             for (String token : tokens) {
                 token = token.toLowerCase();
@@ -54,21 +57,30 @@ public class Index {
     }
 
     /**
-     * @param term  a word
-     * @param docID a specified docID
-     * @return the tf-idf weight of the word in docID
-     */
-    public double getWeight(String term, String docID) {
-        term = term.toLowerCase();
-        return getTF(term, docID) * ((double) numOfDocs / getFrequency(term));
-    }
-
-    /**
      * @param term a word
      * @return true if the term exist in inverted index, false otherwise.
      */
     public boolean termExist(String term) {
         return termMap.getOrDefault(term.toLowerCase(), null) != null;
+    }
+
+    /**
+     * @param term a word
+     * @return the posting of the word
+     * @throws NullPointerException if the word is not found in inverted index map
+     */
+    public LinkedList<Map.Entry<String, Double>> getPosting(String term) throws NullPointerException {
+        return termMap.get(term.toLowerCase());
+    }
+
+    /**
+     * @param term  a word
+     * @param docID a specified docID
+     * @return the tf-idf weight of the word in docID using raw tf
+     */
+    public double getWeight(String term, String docID) {
+        term = term.toLowerCase();
+        return getTF(term, docID) * ((double) numOfDocs / getFrequency(term));
     }
 
     /**
@@ -96,12 +108,11 @@ public class Index {
     }
 
     /**
-     * @param term a word
-     * @return the posting of the word
-     * @throws NullPointerException if the word is not found in inverted index map
+     * @param docID document ID
+     * @return return the {TokenDoc} instance with docID
      */
-    public LinkedList<Map.Entry<String, Double>> getPosting(String term) throws NullPointerException {
-        return termMap.get(term.toLowerCase());
+    public TokenDoc getDoc(String docID) {
+        return docMap.get(docID);
     }
 
     /**

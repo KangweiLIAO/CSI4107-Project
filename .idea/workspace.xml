@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="comments update">
+    <list default="true" id="5b2eec68-3d0a-48a6-891d-fcd7a7b13d1c" name="Changes" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Index.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Index.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/TokenDoc.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/TokenDoc.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,6 +32,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="ASKED_SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -64,7 +64,8 @@
       <workItem from="1634410175477" duration="347000" />
       <workItem from="1634410537088" duration="10482000" />
       <workItem from="1634445039012" duration="16932000" />
-      <workItem from="1634482209762" duration="8445000" />
+      <workItem from="1634482209762" duration="8885000" />
+      <workItem from="1634537977355" duration="4850000" />
     </task>
     <task id="LOCAL-00001" summary="Rebase">
       <created>1634410265769</created>
@@ -150,7 +151,35 @@
       <option name="project" value="LOCAL" />
       <updated>1634484637072</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="bug fixed and getWeight() added">
+      <created>1634498333131</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1634498333131</updated>
+    </task>
+    <task id="LOCAL-00014" summary="update">
+      <created>1634498359336</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1634498359336</updated>
+    </task>
+    <task id="LOCAL-00015" summary="toString() override">
+      <created>1634498373621</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1634498373621</updated>
+    </task>
+    <task id="LOCAL-00016" summary="update">
+      <created>1634498383430</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1634498383430</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -175,9 +204,11 @@
     <MESSAGE value="step 1 &amp; 2 updated" />
     <MESSAGE value="step 1 &amp; 2 finished" />
     <MESSAGE value="warning fixed" />
-    <MESSAGE value="update" />
     <MESSAGE value="comments update" />
-    <option name="LAST_COMMIT_MESSAGE" value="comments update" />
+    <MESSAGE value="bug fixed and getWeight() added" />
+    <MESSAGE value="toString() override" />
+    <MESSAGE value="update" />
+    <option name="LAST_COMMIT_MESSAGE" value="update" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
