@@ -17,6 +17,8 @@ public class Index {
     private final HashMap<String, TokenDoc> docMap; // HashMap<term, docSize>
 
     /**
+     * Constructor of Index class, base on the input documents output an inverted index map
+     *
      * @param docs a list of {TokenDoc} instance to initialize an inverted index instance
      */
     public Index(ArrayList<TokenDoc> docs) {
@@ -31,12 +33,15 @@ public class Index {
             for (String token : tokens) {
                 token = token.toLowerCase();
                 Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc)); // (docID, TF) pair for a term
-                if (!termExist(token)) { // if token not in index, put the term into the hashmap
-                    termMap.put(token, new LinkedList<>(List.of(tmp)));
-                    freqMap.put(token, 1);
-                } else { // if token in index, append the docID, tf value to the corresponding term
-                    freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
+                if (termExist(token)) { // if token not in index, put the term into the hashmap
                     termMap.get(token).add(tmp);
+                } else { // if token in index, append the docID, tf value to the corresponding term
+                    termMap.put(token, new LinkedList<>(List.of(tmp)));
+                    if (freqMap.get(token) == null) {
+                        freqMap.put(token, 1);
+                    } else {
+                        freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
+                    }
                 }
             }
         }
@@ -45,15 +50,43 @@ public class Index {
     /**
      * @param term a word
      * @param doc  a {TokenDoc} instance
-     * @return the TF value of this word in this document
+     * @return the TF weight of this word in this document
      */
     private double computeTF(String term, TokenDoc doc) {
-        double nij = 0;
+        double rawTF = 0.;
         for (String words : doc.getTokens()) {
-            if (words.equalsIgnoreCase(term)) nij++;
+            if (words.equalsIgnoreCase(term)) rawTF++;
         }
-        return BigDecimal.valueOf(nij / doc.getTokens().size())
-                .setScale(3, RoundingMode.HALF_UP).doubleValue();
+        if (rawTF == 0) return 0;
+        return 1 + Main.log(10, rawTF);
+    }
+
+    /**
+     * @param term  a word
+     * @param docID a specified docID
+     * @return the TF value of the term in specified doc
+     * @throws NullPointerException if the word is not found in inverted index map
+     */
+    public double getTF(String term, String docID) throws NullPointerException {
+        if (!termExist(term)) return 0;
+        for (Map.Entry<String, Double> pair : termMap.get(term.toLowerCase())) {
+            if (pair.getKey().equals(docID)) {
+                return pair.getValue();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * @param term  a word
+     * @param docID a specified docID
+     * @return the tf-idf weight of the word in docID using raw tf
+     */
+    public double getTFIDF(String term, String docID) {
+        term = term.toLowerCase();
+        if (!termExist(term)) return 0;
+        return getTF(term, docID) * Main.log(10
+                , (double) numOfDocs / getFrequency(term));
     }
 
     /**
@@ -61,7 +94,7 @@ public class Index {
      * @return true if the term exist in inverted index, false otherwise.
      */
     public boolean termExist(String term) {
-        return termMap.getOrDefault(term.toLowerCase(), null) != null;
+        return termMap.get(term.toLowerCase()) != null;
     }
 
     /**
@@ -75,29 +108,10 @@ public class Index {
     }
 
     /**
-     * @param term  a word
-     * @param docID a specified docID
-     * @return the tf-idf weight of the word in docID using raw tf
+     * @return the total number of document in this inverted index map
      */
-    public double getWeight(String term, String docID) {
-        term = term.toLowerCase();
-        return getTF(term, docID) * Main.log(10
-                , (double) numOfDocs / getFrequency(term));
-    }
-
-    /**
-     * @param term  a word
-     * @param docID a specified docID
-     * @return the TF value of the term in specified doc
-     * @throws NullPointerException if the word is not found in inverted index map
-     */
-    public Double getTF(String term, String docID) throws NullPointerException {
-        for (Map.Entry<String, Double> pair : termMap.get(term.toLowerCase())) {
-            if (pair.getKey().equals(docID)) {
-                return pair.getValue();
-            }
-        }
-        return 0.;
+    public int getNumOfDocs() {
+        return numOfDocs;
     }
 
     /**
@@ -105,7 +119,7 @@ public class Index {
      * @return how many times this word appears in documents
      * @throws NullPointerException if the word is not found in inverted index map
      */
-    public Integer getFrequency(String term) throws NullPointerException {
+    public int getFrequency(String term) throws NullPointerException {
         return freqMap.get(term.toLowerCase());
     }
 
@@ -120,7 +134,7 @@ public class Index {
     /**
      * @return the length (number of terms) of the inverted index map
      */
-    public int length() {
+    public int numOfTerms() {
         return termMap.size();
     }
 
