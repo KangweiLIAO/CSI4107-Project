@@ -28,6 +28,8 @@ public class Main {
     }
 
     /**
+     * Perform the first step of inverted index construction - text preprocessing
+     *
      * @param path file path of the document file
      * @return ArrayList<TokenDoc> containing the document data
      * @throws IOException if file not found
@@ -122,8 +124,10 @@ public class Main {
     }
 
     /**
+     * Read stop-words from a txt file
+     *
      * @param path file path of stop-word file
-     * @return ArrayList<String> containing the stop-words
+     * @return String arrayList containing the stop-words
      * @throws IOException if file not found
      */
     public static ArrayList<String> readStopWord(String path) throws IOException {
@@ -137,6 +141,12 @@ public class Main {
         return stopWords;
     }
 
+    /**
+     * Returns the cosine similarity scores for all documents in inverted index map
+     *
+     * @param query an arraylist containing the query terms
+     * @return a map containing the cosine similarity scores in (docID, score) pattern
+     */
     public static HashMap<String, Double> getSimilarityScores(ArrayList<String> query) {
         HashMap<String, Double> scores = new HashMap<>();
         for (Map.Entry<String, TokenDoc> doc : index.getDocs().entrySet()) {
@@ -147,6 +157,13 @@ public class Main {
         return scores;
     }
 
+    /**
+     * Returns the cosine similarity of the specified document
+     *
+     * @param query an arraylist containing the query terms
+     * @param docID the file used to calculate the similarity
+     * @return the cosine similarity of given document for given query
+     */
     public static double cosineSimilarity(ArrayList<String> query, String docID) {
         double numerator = 0;
         ArrayList<Double> queryV = new ArrayList<>();
@@ -212,6 +229,8 @@ public class Main {
     }
 
     /**
+     * Returns the logarithm of a double with given base
+     *
      * @param base log base
      * @param n    a number n
      * @return the log_base(n)
@@ -221,6 +240,8 @@ public class Main {
     }
 
     /**
+     * Return the norm of vector
+     *
      * @param vector the vector
      * @return the norm of the vector
      */
