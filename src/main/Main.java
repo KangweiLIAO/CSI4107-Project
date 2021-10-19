@@ -13,14 +13,22 @@ public class Main {
             RESOURCE_PATH = Objects.requireNonNull(Main.class.getResource("")).getPath() + "/resources/";
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
             index = new Index(tokenArr);  // indexing
-            // Testing for step3:
-            // ArrayList<String> testQ = tokenArr.get(0).getTokens();
-            // System.out.println("Query: " + testQ);
-            // HashMap<String, Double> test = getSimilarityScores(testQ);
-            // System.out.println(sortScoresDescend(
-            //  trimMap(10, sortScoresDescend(test))
-            // ));
+            // Test for step3:
+//            var testQ = new ArrayList<String>(Arrays.asList("BBC","World","Service","staff","cuts"));
+//            System.out.println(cosineSimilarity(testQ, "34553453812387840"));
+//            System.out.println(sortScoresDescend(
+//                    trimMap(10,
+//                        sortScoresDescend(
+//                            getSimilarityScores(index.getDocs()
+//                                .get("34952194402811904").getTokens())
+//                        )
+//                    )
+//                )
+//            );
+            // Running system on the set of test queries:
             resultFile(RESOURCE_PATH + "topics_MB1-49.txt");
+            // Evaluation:
+
         } catch (NullPointerException | IOException err) {
             System.out.println("File not found or Null pointer exception occurred:");
             throw err;
@@ -28,6 +36,8 @@ public class Main {
     }
 
     /**
+     * Perform the first step of inverted index construction - text preprocessing
+     *
      * @param path file path of the document file
      * @return ArrayList<TokenDoc> containing the document data
      * @throws IOException if file not found
@@ -110,10 +120,11 @@ public class Main {
                 query.setQueryTerms(queryTerms);
                 // Get the rank map
                 Map<String, Double> rankMap = getSimilarityScores(queryTerms);
+                rankMap = sortScoresDescend(trimMap(1000, sortScoresDescend(rankMap)));
                 // Write data to file
                 int rank = 1;
                 for (Map.Entry<String, Double> entry : rankMap.entrySet()) {
-                    fileWriter.write(query.getQid() + " Q0 " + entry.getKey() + " " + rank + "  " + entry.getValue() + " " + "Round " + round + "\n");
+                    fileWriter.write(round + " Q0 " + entry.getKey() + " " + rank + " " + entry.getValue() + " " + "Round" + round + "\n");
                     rank++;
                 }
             }
@@ -122,8 +133,10 @@ public class Main {
     }
 
     /**
+     * Read stop-words from a txt file
+     *
      * @param path file path of stop-word file
-     * @return ArrayList<String> containing the stop-words
+     * @return String arrayList containing the stop-words
      * @throws IOException if file not found
      */
     public static ArrayList<String> readStopWord(String path) throws IOException {
@@ -137,8 +150,14 @@ public class Main {
         return stopWords;
     }
 
+    /**
+     * Returns the cosine similarity scores for all documents in inverted index map
+     *
+     * @param query an arraylist containing the query terms
+     * @return a map containing the cosine similarity scores in (docID, score) pattern
+     */
     public static HashMap<String, Double> getSimilarityScores(ArrayList<String> query) {
-        HashMap<String, Double> scores = new HashMap<>();
+        HashMap<String, Double> scores = new HashMap<>();   // HashMap<docID, score>
         for (Map.Entry<String, TokenDoc> doc : index.getDocs().entrySet()) {
             double score = cosineSimilarity(query, doc.getKey());
             if (!Double.isNaN(score))
@@ -147,13 +166,20 @@ public class Main {
         return scores;
     }
 
+    /**
+     * Returns the cosine similarity of the specified document
+     *
+     * @param query an arraylist containing the query terms
+     * @param docID the file used to calculate the similarity
+     * @return the cosine similarity of given document for given query
+     */
     public static double cosineSimilarity(ArrayList<String> query, String docID) {
         double numerator = 0;
         ArrayList<Double> queryV = new ArrayList<>();
         ArrayList<Double> docV = new ArrayList<>();
         for (String term : query) {
-            double qTFIDF = getQueryTFIDF(term, query); // calculate tf-idf of the query term
-            double dTFIDF = index.getTFIDF(term, docID);
+            double qTFIDF = getQueryTFIDF(term, query);     // tf-idf for the query term
+            double dTFIDF = index.getTFIDF(term, docID);    // td-idf for term in document
             queryV.add(qTFIDF);
             docV.add(dTFIDF);
             numerator += qTFIDF * dTFIDF;
@@ -212,6 +238,8 @@ public class Main {
     }
 
     /**
+     * Returns the logarithm of a double with given base
+     *
      * @param base log base
      * @param n    a number n
      * @return the log_base(n)
@@ -221,6 +249,8 @@ public class Main {
     }
 
     /**
+     * Return the norm of vector
+     *
      * @param vector the vector
      * @return the norm of the vector
      */

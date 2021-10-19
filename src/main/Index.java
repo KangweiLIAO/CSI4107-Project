@@ -1,6 +1,4 @@
 package main;
-
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -28,7 +26,9 @@ public class Index {
         for (TokenDoc doc : docs) {
             docMap.put(doc.getID(), doc);
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
+            Set<String> uniqueSet = new LinkedHashSet<>();
             for (String token : tokens) {
+                uniqueSet.add(token);
                 token = token.toLowerCase();
                 Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), getTF(token, doc.getID())); // (docID, TF) pair for a term
                 if (termExist(token)) { // if token in index, append the (docID,tfValue) to the corresponding term
@@ -38,7 +38,8 @@ public class Index {
                 }
                 if (freqMap.get(token) == null) {
                     freqMap.put(token, 1);
-                } else {
+                } else if (!uniqueSet.contains(token)) {
+                    uniqueSet.add(token); // used to prevent duplicated terms counted in freq in one doc
                     freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
                 }
             }
@@ -65,7 +66,7 @@ public class Index {
      */
     public double getIDF(String term) {
         if (!termExist(term)) return 0;
-        return Main.log(10, (double) numOfDocs / getFrequency(term));
+        return 1 + Main.log(10, (double) numOfDocs / getFrequency(term));
     }
 
     /**
