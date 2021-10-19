@@ -20,4 +20,8 @@ Secondly, the program generated an inverted index based on the collection which 
 document frequency and term frency.<br>
 Thirdly, the program could retreve qureies and output the top 10 related Twitter comments.We use the cosine similarity formula for simiar calculate. 
 ### How to run it
+First, you could download the whole file.
+Second, Make sure you have the JDK version 16. Recomand ide is IDEA.
+Third, you may compile all files and run main(Main.java)
 ### Algorithms and Data Structures Description
+The Similarity algotithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are.
