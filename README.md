@@ -32,7 +32,8 @@ As for the tokenization part, we try to delete all the symbols such as "/", ":",
 Stop-words and collection after processed are all stored in Array Lists. We choose Arrary list since it has feasible size and elements can be inserted at or deleted from a particular position.<br>
 
 **Second Step**<br>
-we build a inverted index which we can find the doc contain the word we need. In index.java(For inverted index), we use hash map for data structures. We have three hash map, which is termMap,freqMap and docMap. TermMap are using to storge the terms, which is the doc which contain the spicific word, the freqMap storge the frequency of word, and the docMap storge the doc size.<br>
+We create a class named Index, representing the inverted indexing. We try to  optimize the value of collection by only storing unique terms. We use HashMap<String, LinkedList<Map.Entry<String, Double>>> to represent the term map, which is like {term:[(Document ID, Frequency)]}. Also, we use Map structure to stores frequency and document sizes. The reason we choose Map is that HashMap’s best and average case for Search, Insert and Delete is O(1) and worst case is O(n), which helps to save time.
+<br>
 
 **Thrid Step**<br>
 we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are.
