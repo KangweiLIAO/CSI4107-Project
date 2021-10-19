@@ -38,3 +38,5 @@ We create a class named Index, representing the inverted indexing. We try to  op
 **Thrid Step**<br>
 we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are. Finaly we return the score of top 10 information.<br>
 
+### Discusstion
+There are  vocabularies in inverted index. 
