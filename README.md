@@ -21,7 +21,7 @@ document frequency and term frency.<br>
 Thirdly, the program could retreve qureies and output the top 10 related Twitter comments by using the cosine similarity formula for simiar calculate. 
 ### How to run it
 First, download the whole file named CSI4107-Assignment.
-Second, make sure you have the JDK version 15+. Recomanded ide is IDEA.
+Second, make sure you have the JDK version 16. Recomanded ide is IDEA.
 Third, compile all files and run main(Main.java)
 Last, you will get a result.txt of 49 test queries.
 ### Algorithms and Data Structures Description
