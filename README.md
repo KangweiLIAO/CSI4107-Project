@@ -18,6 +18,6 @@ the program removes all the symbol in the collection. For example, "Latest::" wi
 words appeared in stopwords.txt.<br>
 Secondly, the program generated an inverted index based on the collection which has already disposed. The inverted index stores the terms and its 
 document frequency and term frency.<br>
-Thirdly, the program could retreve qureies and output the top 10 related Twitter comments.
+Thirdly, the program could retreve qureies and output the top 10 related Twitter comments.We use the cosine similarity formula for simiar calculate. 
 ### How to run it
 ### Algorithms and Data Structures Description
