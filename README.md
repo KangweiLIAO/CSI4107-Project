@@ -16,9 +16,9 @@ Aozhuo Zhang 300057882<br>
 Firstly, the program deals with the collection which is the tweet messages by tokenizing and removing stop words. As for the tokenization,
 the program removes all the symbol in the collection. For example, "Latest::" will be "Latest". Also, the program scan the collection and remove
 words appeared in stopwords.txt.<br>
-Secondly, the program generated an inverted index based on the collection which has already disposed. The inverted index stores the terms and its 
+Secondly, the program generated an inverted index based on the collection which is from above. The inverted index stores the terms and its 
 document frequency and term frency.<br>
-Thirdly, the program could retreve qureies and output the top 10 related Twitter comments.We use the cosine similarity formula for simiar calculate. 
+Thirdly, the program could retreve qureies and output the top 10 related Twitter comments by using the cosine similarity formula for simiar calculate. 
 ### How to run it
 First, download the whole file named CSI4107-Assignment.
 Second, make sure you have the JDK version 15+. Recomanded ide is IDEA.
@@ -36,4 +36,5 @@ We create a class named Index, representing the inverted indexing. We try to  op
 <br>
 
 **Thrid Step**<br>
-we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are.
+we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are. Finaly we return the score of top 10 information.<br>
+
