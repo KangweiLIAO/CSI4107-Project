@@ -23,16 +23,11 @@ public class Index {
         termMap = new HashMap<>();
         freqMap = new HashMap<>();
         docMap = new HashMap<>();
-        var nnn = 100;
         for (TokenDoc doc : docs) {
             docMap.put(doc.getID(), doc);
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             Set<String> uniqueSet = new LinkedHashSet<>();
             for (String token : tokens) {
-                if (nnn > 0) {
-                    System.out.println(token);
-                    nnn--;
-                }
                 uniqueSet.add(token);
                 token = token.toLowerCase();
                 Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), getTF(token, doc.getID())); // (docID, TF) pair for a term

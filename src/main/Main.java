@@ -13,23 +13,8 @@ public class Main {
             RESOURCE_PATH = Objects.requireNonNull(Main.class.getResource("")).getPath() + "/resources/";
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
             index = new Index(tokenArr);  // indexing
-            System.out.println(index.numOfTerms());
-            // Test for step3:
-//            var testQ = new ArrayList<String>(Arrays.asList("BBC","World","Service","staff","cuts"));
-//            System.out.println(cosineSimilarity(testQ, "34553453812387840"));
-//            System.out.println(sortScoresDescend(
-//                    trimMap(10,
-//                        sortScoresDescend(
-//                            getSimilarityScores(index.getDocs()
-//                                .get("34952194402811904").getTokens())
-//                        )
-//                    )
-//                )
-//            );
             // Running system on the set of test queries:
             resultFile(RESOURCE_PATH + "topics_MB1-49.txt");
-            // Evaluation:
-
         } catch (NullPointerException | IOException err) {
             System.out.println("File not found or Null pointer exception occurred:");
             throw err;
