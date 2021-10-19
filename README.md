@@ -41,7 +41,7 @@ we use the similarity algorithm. The Similarity algorithm we use is the cosine s
 ### Discusstion
 There are 70487 vocabularies in inverted index.<br>
 Top 100 tokens:<br>
-![Top 100 tokens alt]( Top 100 "Top 100 tokens")
+![Top 100 tokens alt]( https://github.com/KangweiLIAO/CSI4107-Assignment1/blob/master/Top%20100.png "Top 100 tokens")
 
 #### First 10 answers to queries 1:
 1 Q0 30260724248870912 1 0.9923496054330064 Round1 <br>
