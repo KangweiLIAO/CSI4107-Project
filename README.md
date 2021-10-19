@@ -39,4 +39,28 @@ We create a class named Index, representing the inverted indexing. We try to  op
 we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are. Finaly we return the score of top 10 information.<br>
 
 ### Discusstion
-There are  vocabularies in inverted index. 
+There are 70487 vocabularies in inverted index. 
+
+#### First 10 answers to queries 1:
+1 Q0 30260724248870912 1 0.9923496054330064 Round1
+1 Q0 30198105513140224 2 0.9632210242903613 Round1
+1 Q0 32504175552102401 3 0.889118635625648 Round1
+1 Q0 32158658863304705 4 0.889118635625648 Round1
+1 Q0 34952194402811904 5 0.889118635625648 Round1
+1 Q0 30236884051435520 6 0.889118635625648 Round1
+1 Q0 30251634873335810 7 0.8891186356256479 Round1
+1 Q0 30299217419304960 8 0.8891186356256479 Round1
+1 Q0 32415024995631105 9 0.8891186356256477 Round1
+1 Q0 30303184207478784 10 0.8891186356256477 Round1
+#### First 10 answers to queries 25:
+25 Q0 31550836899323904 1 0.9914768881852257 Round25
+25 Q0 31738694356434944 2 0.9914768881852257 Round25
+25 Q0 32609015158542336 3 0.9914768881852256 Round25
+25 Q0 31286354960715777 4 0.9914768881852255 Round25
+25 Q0 30704222135652352 5 0.8152163455086991 Round25
+25 Q0 29993056316948480 6 0.815216345508699 Round25
+25 Q0 33609772196560896 7 0.815216345508699 Round25
+25 Q0 32955753920733184 8 0.815216345508699 Round25
+25 Q0 30767638397321217 9 0.815216345508699 Round25
+25 Q0 33633450548264960 10 0.815216345508699 Round25
+
