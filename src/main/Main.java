@@ -13,14 +13,22 @@ public class Main {
             RESOURCE_PATH = Objects.requireNonNull(Main.class.getResource("")).getPath() + "/resources/";
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
             index = new Index(tokenArr);  // indexing
-            // Testing for step3:
-            // ArrayList<String> testQ = tokenArr.get(0).getTokens();
-            // System.out.println("Query: " + testQ);
-            // HashMap<String, Double> test = getSimilarityScores(testQ);
-            // System.out.println(sortScoresDescend(
-            //  trimMap(10, sortScoresDescend(test))
-            // ));
+            // Test for step3:
+//            var testQ = new ArrayList<String>(Arrays.asList("BBC","World","Service","staff","cuts"));
+//            System.out.println(cosineSimilarity(testQ, "34553453812387840"));
+//            System.out.println(sortScoresDescend(
+//                    trimMap(10,
+//                        sortScoresDescend(
+//                            getSimilarityScores(index.getDocs()
+//                                .get("34952194402811904").getTokens())
+//                        )
+//                    )
+//                )
+//            );
+            // Running system on the set of test queries:
             resultFile(RESOURCE_PATH + "topics_MB1-49.txt");
+            // Evaluation:
+
         } catch (NullPointerException | IOException err) {
             System.out.println("File not found or Null pointer exception occurred:");
             throw err;
@@ -112,10 +120,11 @@ public class Main {
                 query.setQueryTerms(queryTerms);
                 // Get the rank map
                 Map<String, Double> rankMap = getSimilarityScores(queryTerms);
+                rankMap = sortScoresDescend(trimMap(1000, sortScoresDescend(rankMap)));
                 // Write data to file
                 int rank = 1;
                 for (Map.Entry<String, Double> entry : rankMap.entrySet()) {
-                    fileWriter.write(query.getQid() + " Q0 " + entry.getKey() + " " + rank + "  " + entry.getValue() + " " + "Round " + round + "\n");
+                    fileWriter.write(round + " Q0 " + entry.getKey() + " " + rank + " " + entry.getValue() + " " + "Round" + round + "\n");
                     rank++;
                 }
             }
@@ -148,7 +157,7 @@ public class Main {
      * @return a map containing the cosine similarity scores in (docID, score) pattern
      */
     public static HashMap<String, Double> getSimilarityScores(ArrayList<String> query) {
-        HashMap<String, Double> scores = new HashMap<>();
+        HashMap<String, Double> scores = new HashMap<>();   // HashMap<docID, score>
         for (Map.Entry<String, TokenDoc> doc : index.getDocs().entrySet()) {
             double score = cosineSimilarity(query, doc.getKey());
             if (!Double.isNaN(score))
@@ -169,8 +178,8 @@ public class Main {
         ArrayList<Double> queryV = new ArrayList<>();
         ArrayList<Double> docV = new ArrayList<>();
         for (String term : query) {
-            double qTFIDF = getQueryTFIDF(term, query); // calculate tf-idf of the query term
-            double dTFIDF = index.getTFIDF(term, docID);
+            double qTFIDF = getQueryTFIDF(term, query);     // tf-idf for the query term
+            double dTFIDF = index.getTFIDF(term, docID);    // td-idf for term in document
             queryV.add(qTFIDF);
             docV.add(dTFIDF);
             numerator += qTFIDF * dTFIDF;
