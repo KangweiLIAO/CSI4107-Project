@@ -1,12 +1,7 @@
 package main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
-
-import static java.util.Collections.sort;
 
 public class Main {
 
@@ -18,15 +13,16 @@ public class Main {
             RESOURCE_PATH = Objects.requireNonNull(Main.class.getResource("")).getPath() + "/resources/";
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
             index = new Index(tokenArr);  // indexing
-
-            ArrayList<String> testQ = tokenArr.get(0).getTokens();
-            System.out.println("Query: " + testQ);
-            HashMap<String, Double> test = getSimilarityScores(testQ);
-            System.out.println(sortScoresDescend(
-                    trimMap(10, sortScoresDescend(test))
-            ));
+            // Testing for step3:
+            // ArrayList<String> testQ = tokenArr.get(0).getTokens();
+            // System.out.println("Query: " + testQ);
+            // HashMap<String, Double> test = getSimilarityScores(testQ);
+            // System.out.println(sortScoresDescend(
+            //  trimMap(10, sortScoresDescend(test))
+            // ));
+            resultFile(RESOURCE_PATH + "topics_MB1-49.txt");
         } catch (NullPointerException | IOException err) {
-            System.out.println("File not found or Null pointer exception occurred: ");
+            System.out.println("File not found or Null pointer exception occurred:");
             throw err;
         }
     }
@@ -73,8 +69,61 @@ public class Main {
     }
 
     /**
+     * Read the test file, and return the file which contains the result of test queries.
+     *
+     * @param testFileName The name of test queries file
+     */
+    public static void resultFile(String testFileName) throws IOException {
+        // Create a file to store the result
+        File resultFile = new File("result.txt");
+        FileWriter fileWriter = new FileWriter(resultFile, true);
+        // Read the test queries
+        File testFile = new File(testFileName);
+        BufferedReader in = new BufferedReader(new FileReader(testFile));
+        String line;
+        Query query = new Query();
+        // An array list stores the strings of query like ["a","f",...]
+        ArrayList<String> queryTerms = new ArrayList<>();
+        int round = 0; // Use as a tag
+        while ((line = in.readLine()) != null) {
+            // When line starts with <top>, we assign a query instance
+            if (line.startsWith("<top>")) {
+                query = new Query();
+                queryTerms = new ArrayList<>();
+            }
+            if (line.startsWith("<num>")) {
+                String qid = line.substring(14, 19);
+                query.setQid(qid);
+            }
+            // When line starts with <title>, it means a query section finished
+            // Query section means the section that starts with <top>, and end with </top>
+            if (line.startsWith("<title>")) {
+                round++;
+                line = line.replace("<title>", "");
+                line = line.replace("</title>", "");
+                // Example: " fdf df df "
+                for (String s : line.split(" ")) {
+                    if (!s.equals("")) {
+                        queryTerms.add(s);
+                    }
+                }
+                query.setQueryTerms(queryTerms);
+                // Get the rank map
+                Map<String, Double> rankMap = getSimilarityScores(queryTerms);
+                // Write data to file
+                int rank = 1;
+                for (Map.Entry<String, Double> entry : rankMap.entrySet()) {
+                    fileWriter.write(query.getQid() + " Q0 " + entry.getKey() + " " + rank + "  " + entry.getValue() + " " + "Round " + round + "\n");
+                    rank++;
+                }
+            }
+        }
+        fileWriter.close();
+    }
+
+    /**
      * @param path file path of stop-word file
-     * @return ArrayList<String> containing the stopwords
+     * @return ArrayList<String> containing the stop-words
      * @throws IOException if file not found
      */
     public static ArrayList<String> readStopWord(String path) throws IOException {

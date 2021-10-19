@@ -3,7 +3,7 @@ package main;
 import java.util.ArrayList;
 
 public class Query {
-    public String Qid = "-1";
+    public String qid = "-1";
     public ArrayList<String> queryTerms;
 
     // Default Constructor
@@ -11,17 +11,17 @@ public class Query {
     }
 
     // Constructor
-    public Query(String Qid, ArrayList<String> queryTerms) {
-        Qid = Qid;
-        queryTerms = queryTerms;
+    public Query(String qid, ArrayList<String> queryTerms) {
+        this.qid = qid;
+        this.queryTerms = queryTerms;
     }
 
     public void setQid(String id) {
-        this.Qid = id;
+        this.qid = id;
     }
 
     public String getQid() {
-        return Qid;
+        return qid;
     }
 
     public void setQueryTerms(ArrayList<String> queryTerms) {
