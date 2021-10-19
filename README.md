@@ -39,7 +39,9 @@ We create a class named Index, representing the inverted indexing. We try to  op
 we use the similarity algorithm. The Similarity algorithm we use is the cosine similarity formula. In this algorithm, We need to first decompose the two pieces of text waiting to be compared into a list in terms of words. Then calculate the frequency of occurrence of the words in the query and in the text waiting to be compared, and generate the list. Finally, we use the list of two word frequencies to perform cosine similarity calculation, and calculate a similarity value, the larger it is, the more similar the two texts are. Finaly we return the score of top 10 information.<br>
 
 ### Discusstion
-There are 70487 vocabularies in inverted index. 
+There are 70487 vocabularies in inverted index.<br>
+Top 100 tokens:<br>
+![Top 100 tokens alt]( "Top 100 tokens")
 
 #### First 10 answers to queries 1:
 1 Q0 30260724248870912 1 0.9923496054330064 Round1 <br>
@@ -64,3 +66,4 @@ There are 70487 vocabularies in inverted index.
 25 Q0 30767638397321217 9 0.815216345508699 Round25<br>
 25 Q0 33633450548264960 10 0.815216345508699 Round25<br>
 
+The results are relatively high, which means that the tokenization step and inverted index step are successful.
