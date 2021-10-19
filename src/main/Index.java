@@ -1,7 +1,6 @@
 package main;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -27,66 +26,57 @@ public class Index {
         freqMap = new HashMap<>();
         docMap = new HashMap<>();
         for (TokenDoc doc : docs) {
-            // System.out.println("34952194402811904");
             docMap.put(doc.getID(), doc);
             ArrayList<String> tokens = doc.getTokens(); // get tokens from tokenized document
             for (String token : tokens) {
                 token = token.toLowerCase();
-                Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), computeTF(token, doc)); // (docID, TF) pair for a term
-                if (termExist(token)) { // if token not in index, put the term into the hashmap
+                Map.Entry<String, Double> tmp = new AbstractMap.SimpleEntry<>(doc.getID(), getTF(token, doc.getID())); // (docID, TF) pair for a term
+                if (termExist(token)) { // if token in index, append the (docID,tfValue) to the corresponding term
                     termMap.get(token).add(tmp);
-                } else { // if token in index, append the docID, tf value to the corresponding term
+                } else { // if token not in index, put the term into the hashmap
                     termMap.put(token, new LinkedList<>(List.of(tmp)));
-                    if (freqMap.get(token) == null) {
-                        freqMap.put(token, 1);
-                    } else {
-                        freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
-                    }
+                }
+                if (freqMap.get(token) == null) {
+                    freqMap.put(token, 1);
+                } else {
+                    freqMap.replace(token, freqMap.get(token) + 1); // update freqMap for the term
                 }
             }
         }
     }
 
     /**
-     * @param term a word
-     * @param doc  a {TokenDoc} instance
+     * @param term  a word
+     * @param docID a docID
      * @return the TF weight of this word in this document
      */
-    private double computeTF(String term, TokenDoc doc) {
+    private double getTF(String term, String docID) {
         double rawTF = 0.;
-        for (String words : doc.getTokens()) {
+        for (String words : docMap.get(docID).getTokens()) {
             if (words.equalsIgnoreCase(term)) rawTF++;
         }
         if (rawTF == 0) return 0;
-        return 1 + Main.log(10, rawTF);
+        return rawTF / docMap.get(docID).getTokens().size();
     }
 
     /**
-     * @param term  a word
-     * @param docID a specified docID
-     * @return the TF value of the term in specified doc
-     * @throws NullPointerException if the word is not found in inverted index map
+     * @param term a word
+     * @return the idf of the word in indexing
      */
-    public double getTF(String term, String docID) throws NullPointerException {
+    public double getIDF(String term) {
         if (!termExist(term)) return 0;
-        for (Map.Entry<String, Double> pair : termMap.get(term.toLowerCase())) {
-            if (pair.getKey().equals(docID)) {
-                return pair.getValue();
-            }
-        }
-        return 0;
+        return Main.log(10, (double) numOfDocs / getFrequency(term));
     }
 
     /**
      * @param term  a word
      * @param docID a specified docID
-     * @return the tf-idf weight of the word in docID using raw tf
+     * @return the tf-idf of the word in docID
      */
     public double getTFIDF(String term, String docID) {
         term = term.toLowerCase();
         if (!termExist(term)) return 0;
-        return getTF(term, docID) * Main.log(10
-                , (double) numOfDocs / getFrequency(term));
+        return getTF(term, docID) * getIDF(term);
     }
 
     /**
@@ -98,6 +88,8 @@ public class Index {
     }
 
     /**
+     * Return posting in form of LinkedList[Map.Entry[docID, weight]]
+     *
      * @param term a word
      * @return the posting of the word
      * @throws NullPointerException if the word is not found in inverted index map
@@ -124,11 +116,10 @@ public class Index {
     }
 
     /**
-     * @param docID document ID
-     * @return return the {TokenDoc} instance with docID
+     * @return return a map containing all documents in inverted index map
      */
-    public TokenDoc getDoc(String docID) {
-        return docMap.get(docID);
+    public HashMap<String, TokenDoc> getDocs() {
+        return docMap;
     }
 
     /**
