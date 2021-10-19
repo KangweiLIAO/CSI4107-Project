@@ -13,6 +13,7 @@ public class Main {
             RESOURCE_PATH = Objects.requireNonNull(Main.class.getResource("")).getPath() + "/resources/";
             ArrayList<TokenDoc> tokenArr = preprocess(RESOURCE_PATH + "Trec_microblog11.txt");  // preprocessing
             index = new Index(tokenArr);  // indexing
+            System.out.println(index.numOfTerms());
             // Test for step3:
 //            var testQ = new ArrayList<String>(Arrays.asList("BBC","World","Service","staff","cuts"));
 //            System.out.println(cosineSimilarity(testQ, "34553453812387840"));
@@ -85,7 +86,7 @@ public class Main {
      */
     public static void resultFile(String testFileName) throws IOException {
         // Create a file to store the result
-        File resultFile = new File("result.txt");
+        File resultFile = new File("Results.txt");
         FileWriter fileWriter = new FileWriter(resultFile, true);
         // Read the test queries
         File testFile = new File(testFileName);
