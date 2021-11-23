@@ -2,6 +2,7 @@ import math
 import re
 import time
 import spacy
+from main import CTcolors
 
 sp = spacy.load('en_core_web_sm')
 
@@ -42,7 +43,7 @@ class InvertedIndex:
 			raw_docs = doc_files.readlines()
 			doc_files.close()  # close the doc source file
 		except FileNotFoundError as e:
-			print('-' * 10, "Document files not found", '-' * 10)
+			print(f"{CTcolors.FAIL}Documents file not found:{CTcolors.ENDC}")
 			print(e)
 
 		if not stopwords_path == '':
@@ -55,19 +56,16 @@ class InvertedIndex:
 					sp.Defaults.stop_words.add(
 						word.replace("\n", '').strip())  # add custom stopwords
 			except FileNotFoundError as e:
-				print('-' * 10, "Stopwords files not found", '-' * 10)
+				print(f"{CTcolors.FAIL}Specified stopwords file not found:{CTcolors.ENDC}")
 				print(e)
 
 		start_time = time.time()
-		print('-' * 10, "Documents' preprocessing start", '-' * 10)
+		print("Start preprocessing documents")
 		for each in raw_docs:
 			each = each.split("\t")  # split id and content
 			each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
-			preprocess(each[1])
-			# use spacy to lemmatize words and remove stopwords:
-			final_terms = [token.lemma_ for token in each_sp if not token.is_stop]
-			self.docs_dict[each[0]] = TokenDoc(each[0], final_terms)  # append to doc array
-		print('-' * 10, "Preprocessing end in", str(time.time() - start_time) + " seconds", '-' * 10)
+			self.docs_dict[each[0]] = TokenDoc(each[0], preprocess(each[1]))  # append to doc array
+		print("Preprocessing end in", str(time.time() - start_time) + " seconds")
 
 		# indexing:
 		for doc in self.docs_dict.values():
@@ -99,6 +97,3 @@ class InvertedIndex:
 		for term in self.docs_dict[doc_id].terms:
 			result += self.get_tfidf(term, doc_id) ** 2
 		return math.sqrt(result)
-
-	def __len__(self):
-		return len(self.term_dict)
