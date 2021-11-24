@@ -3,25 +3,25 @@ import os
 import re
 from inverted_index import InvertedIndex
 from inverted_index import preprocess
-from inverted_index import CTcolors
+from inverted_index import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
 
 
 def read_queries(file_path: str) -> list[(str, list[str])]:
-	qid = ''
+	q_id = ''
 	q_list = []
 	try:
 		q_file = open(file_path, encoding='utf-8')
 		for line in q_file:
 			if "<num>" in line:
-				qid = re.sub("[^0-9]", "", line)  # extract query id from the line
+				q_id = re.sub("[^0-9]", "", line)  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
-				q_list.append((qid, preprocess(line.replace("<title>", '').replace("</title>", ''))))
+				q_list.append((q_id, preprocess(line.replace("<title>", '').replace("</title>", ''))))
 	except FileNotFoundError:
-		print(f"{CTcolors.FAIL}Specified query file not found.{CTcolors.ENDC}")
+		print(f"{CTColors.FAIL}Specified query file not found.{CTColors.ENDC}")
 	return q_list
 
 
@@ -45,7 +45,10 @@ def cos_scores(q_terms: list[str], inv_index: InvertedIndex):
 		common_terms = list(set(doc.terms).intersection(q_terms))
 		for term in common_terms:
 			score += qtfidf_dict[term] * inv_index.get_tfidf(term, doc.id)
-		score /= q_length * inv_index.get_doc_length(doc.id)
+		doc_length = inv_index.get_doc_length(doc.id)
+		if not doc_length == 0:
+			# If document length == 0 (all words in the document been identified as stopwords)
+			score /= q_length * inv_index.get_doc_length(doc.id)
 		scores_dict[doc.id] = score
 	return scores_dict
 
@@ -63,8 +66,8 @@ if __name__ == '__main__':
 	# "Small_queries.txt" and "Small_test_set.txt" can be used for fast testing
 	result_filename = "Results.txt"
 	# generate inverted index:
-	index = InvertedIndex(RES_PATH + "Small_test_set.txt")  # , RES_PATH + "StopWords.txt"
-	queries = read_queries(RES_PATH + "Small_queries.txt")  # read queries from a file
+	index = InvertedIndex(RES_PATH + "Trec_microblog11.txt", RES_PATH + "StopWords.txt")  # , RES_PATH + "StopWords.txt"
+	queries = read_queries(RES_PATH + "topics_MB1-49.txt")  # read queries from a file
 
 	# prepare for to save results:
 	try:
@@ -73,21 +76,21 @@ if __name__ == '__main__':
 		pass  # ignore FileExistsError if '/out' directory exist
 	try:
 		open(OUTPUT_PATH + result_filename)
-		print(f"{CTcolors.WARNING}Warning: [{result_filename}] detected in 'out\\' folder.{CTcolors.ENDC}")
+		print(f"{CTColors.WARNING}Warning: [{result_filename}] detected in 'out\\' folder.{CTColors.ENDC}")
 		print(
-			f"{CTcolors.WARNING}Do you want to delete it? (press enter to remove, other key to exit){CTcolors.ENDC}",
+			f"{CTColors.WARNING}Do you want to delete it? (press enter to remove, other key to exit){CTColors.ENDC}",
 			end='')
 		choice = input()  # catches input from keyboard
 		if choice == '':
 			os.remove(OUTPUT_PATH + result_filename)  # delete old result file in 'out/'
 			print(
-				f"{CTcolors.HEADER}Old [{result_filename}] removed, creating new [{result_filename}]...{CTcolors.ENDC}")
+				f"{CTColors.HEADER}Old [{result_filename}] removed, creating new [{result_filename}]...{CTColors.ENDC}")
 		else:
-			print(f"{CTcolors.FAIL}Interrupted by user.{CTcolors.ENDC}")
+			print(f"{CTColors.FAIL}Interrupted by user.{CTColors.ENDC}")
 			exit()  # exit program
 	except FileNotFoundError as e:
 		# if no old result file found in 'out/' folder:
-		print(f"{CTcolors.HEADER}Start generating [{result_filename}] in 'out\\' folder.{CTcolors.ENDC}")
+		print(f"{CTColors.HEADER}Start generating [{result_filename}] in 'out\\' folder.{CTColors.ENDC}")
 
 	# obtain cosine scores and save them to a result file:
 	for qid, query in queries:
@@ -95,4 +98,4 @@ if __name__ == '__main__':
 		sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
 		# for each query, save the 100 most relevant documents
 		save_results(OUTPUT_PATH + result_filename, qid, sorted_scores[:100])
-	print(f"{CTcolors.OKGREEN}Succeed: New [{result_filename}] created in 'out\\'.{CTcolors.ENDC}")
+	print(f"{CTColors.OKGREEN}Succeed: New [{result_filename}] created in 'out\\'.{CTColors.ENDC}")
