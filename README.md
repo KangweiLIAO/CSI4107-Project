@@ -1,4 +1,4 @@
-#CSI4107 Assignment 2
+# CSI4107 Assignment 2
 ## Teamwork Distribution
 Langqing Zou (300035036)
 - Responsible for **Processing section**.
