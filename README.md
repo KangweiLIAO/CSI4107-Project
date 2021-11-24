@@ -13,3 +13,8 @@ Kangwei Liao (8568800)
 Aozhuo Zhang (300057882)
 - Responsible for **Retrieval and Ranking Section**.
 - Responsible for writing **README.md**.
+
+## Steps To Run
+1. Install spacy library using ```pip install spacy```
+2. Install spacy language model using ```python -m spacy download en_core_web_sm```
+3. Run ```main.py``` using the Python interpreter with spacy
