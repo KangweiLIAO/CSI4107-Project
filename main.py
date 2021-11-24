@@ -16,7 +16,7 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 		q_file = open(file_path, encoding='utf-8')
 		for line in q_file:
 			if "<num>" in line:
-				q_id = re.sub("[^0-9]", "", line)  # extract query id from the line
+				q_id = str(int(re.sub("[^0-9]", "", line)))  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
 				q_list.append((q_id, preprocess(line.replace("<title>", '').replace("</title>", ''))))
@@ -40,14 +40,15 @@ def cos_scores(q_terms: list[str], inv_index: InvertedIndex):
 		qtfidf_dict[term] = qtf_dict[term] * inv_index.get_idf(term)
 	q_length = math.sqrt(sum([x ** 2 for x in qtfidf_dict.values()]))  # document length of query
 	# compute cosine score for each doc:
+	print(q_terms, q_length)
 	for doc in inv_index.docs_dict.values():
 		score = 0
 		common_terms = list(set(doc.terms).intersection(q_terms))
 		for term in common_terms:
 			score += qtfidf_dict[term] * inv_index.get_tfidf(term, doc.id)
 		doc_length = inv_index.get_doc_length(doc.id)
-		if not doc_length == 0:
-			# If document length == 0 (all words in the document been identified as stopwords)
+		if not (q_length == 0 or doc_length == 0):
+			# If document length == 0 (all words in the document been identified as stopwords) or empty query
 			score /= q_length * inv_index.get_doc_length(doc.id)
 		scores_dict[doc.id] = score
 	return scores_dict
@@ -73,9 +74,9 @@ if __name__ == '__main__':
 	try:
 		os.mkdir(OUTPUT_PATH)  # Try create '/out' directory
 	except FileExistsError as e:
-		pass  # ignore FileExistsError if '/out' directory exist
+		pass  # ignore FileExistsError, if '/out' directory exist
 	try:
-		open(OUTPUT_PATH + result_filename)
+		open(OUTPUT_PATH + result_filename) # detect result file
 		print(f"{CTColors.WARNING}Warning: [{result_filename}] detected in 'out\\' folder.{CTColors.ENDC}")
 		print(
 			f"{CTColors.WARNING}Do you want to delete it? (press enter to remove, other key to exit){CTColors.ENDC}",

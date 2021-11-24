@@ -1,9 +1,10 @@
 import math
-import re
 import time
 import spacy
+from nltk.stem.porter import *
 
 sp = spacy.load('en_core_web_sm')
+stemmer = PorterStemmer()
 
 
 class CTColors:
@@ -40,7 +41,9 @@ class TokenDoc:
 def preprocess(raw_str: str):
     # use spacy to lemmatize words and remove stopwords
     str_sp = sp(raw_str.replace("\n", '').strip())
-    return [token.lemma_ for token in str_sp if not token.is_stop]
+    # Lemmatization and porter stemming:
+    return [stemmer.stem(token.lemma_) for token in str_sp if not token.is_stop]  # map=0.1325, P@10=0.2204
+    # return [token.lemma_ for token in str_sp if not token.is_stop]  # map=0.1173, P@10=0.2082
 
 
 class InvertedIndex:
@@ -53,6 +56,7 @@ class InvertedIndex:
             doc_files = open(docs_path, encoding='utf-8')
             raw_docs = doc_files.readlines()
             doc_files.close()  # close the doc source file
+            print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
         except FileNotFoundError as e:
             print(f"{CTColors.FAIL}Documents file not found:{CTColors.ENDC}")
             print(e)
