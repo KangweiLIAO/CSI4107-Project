@@ -3,21 +3,10 @@ import os
 import re
 from inverted_index import InvertedIndex
 from inverted_index import preprocess
+from inverted_index import CTcolors
 
-RES_PATH = os.getcwd() + "\\res\\"
-OUTPUT_PATH = os.getcwd() + "\\out\\"
-
-
-class CTcolors:
-	HEADER = '\033[95m'
-	OKBLUE = '\033[94m'
-	OKCYAN = '\033[96m'
-	OKGREEN = '\033[92m'
-	WARNING = '\033[93m'
-	FAIL = '\033[91m'
-	ENDC = '\033[0m'
-	BOLD = '\033[1m'
-	UNDERLINE = '\033[4m'
+RES_PATH = os.getcwd() + "/res/"
+OUTPUT_PATH = os.getcwd() + "/out/"
 
 
 def read_queries(file_path: str) -> list[(str, list[str])]:
@@ -49,7 +38,7 @@ def cos_scores(q_terms: list[str], inv_index: InvertedIndex):
 	# compute tf-idf of q_terms:
 	for term in q_terms:
 		qtfidf_dict[term] = qtf_dict[term] * inv_index.get_idf(term)
-	q_length = math.sqrt(sum([x ** x for x in qtfidf_dict.values()]))  # document length of query
+	q_length = math.sqrt(sum([x ** 2 for x in qtfidf_dict.values()]))  # document length of query
 	# compute cosine score for each doc:
 	for doc in inv_index.docs_dict.values():
 		score = 0
@@ -74,8 +63,8 @@ if __name__ == '__main__':
 	# "Small_queries.txt" and "Small_test_set.txt" can be used for fast testing
 	result_filename = "Results.txt"
 	# generate inverted index:
-	index = InvertedIndex(RES_PATH + "topics_MB1-49.txt", RES_PATH + "StopWords.txt")
-	queries = read_queries(RES_PATH + "topics_MB1-49.txt")  # read queries from a file
+	index = InvertedIndex(RES_PATH + "Small_test_set.txt")  # , RES_PATH + "StopWords.txt"
+	queries = read_queries(RES_PATH + "Small_queries.txt")  # read queries from a file
 
 	# prepare for to save results:
 	try:
