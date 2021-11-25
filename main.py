@@ -7,7 +7,7 @@ from inverted_index import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
-
+DOC_PER_Q = 1000
 
 def read_queries(file_path: str) -> list[(str, list[str])]:
 	q_id = ''
@@ -98,5 +98,5 @@ if __name__ == '__main__':
 		scores = cos_scores(query, index)
 		sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
 		# for each query, save the 100 most relevant documents
-		save_results(OUTPUT_PATH + result_filename, qid, sorted_scores[:100])
+		save_results(OUTPUT_PATH + result_filename, qid, sorted_scores[:DOC_PER_Q])
 	print(f"{CTColors.OKGREEN}Succeed: New [{result_filename}] created in 'out\\'.{CTColors.ENDC}")
