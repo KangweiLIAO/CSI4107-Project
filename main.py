@@ -1,18 +1,25 @@
 import math
 import os
-import re
 import retrieval_utils as utils
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
-DOC_PER_Q = 1000
+N_MOST_DOC = 1000
 
 
-def similarity_score(q_terms: list[str], inv_index: InvertedIndex, pattern=''):
+def similarity_score(q_terms: list[str], inv_index: InvertedIndex, pattern: str = ''):
+	"""
+	Returns a dictionary (dict[doc_id, score]) containing the similarity scores for a given query
+
+	:param q_terms: a tokenized query
+	:param inv_index: inverted index containing the documents
+	:param pattern: algorithm used to obtain similarity scores (cosine, word2vec)
+	:return: a dictionary containing the similarity scores for all documents in the inverted index
+	"""
+	scores_dict: dict[str, float] = {}  # dict[doc_id, score]
 	if pattern == 'cosine' or pattern == '':
-		scores_dict: dict[str, float] = {}  # dict[doc_id, cos_score]
 		qtf_dict: dict[str, int] = {}
 		qtfidf_dict: dict[str, float] = {}
 		# compute raw tf of q_terms:
@@ -36,9 +43,9 @@ def similarity_score(q_terms: list[str], inv_index: InvertedIndex, pattern=''):
 				# If document length == 0 (all words in the document been identified as stopwords) or empty query
 				score /= q_length * inv_index.get_doc_length(doc.id)
 			scores_dict[doc.id] = score
-		return scores_dict
 	elif pattern == 'word2vec':
 		pass
+	return scores_dict
 
 
 if __name__ == '__main__':
@@ -78,7 +85,8 @@ if __name__ == '__main__':
 	# obtain cosine scores and save them to a result file:
 	for qid, query in queries:
 		scores = similarity_score(query, index)
+		# Sort the similarity scores dictionary
 		sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
-		# for each query, save the 100 most relevant documents
-		utils.save_results(OUTPUT_PATH + result_filename, qid, sorted_scores[:DOC_PER_Q])
+		# for each query, save the N_MOST_DOC most relevant documents
+		utils.save_results(OUTPUT_PATH + result_filename, qid, sorted_scores[:N_MOST_DOC])
 	print(f"{CTColors.OKGREEN}Succeed: New [{result_filename}] created in 'out\\'.{CTColors.ENDC}")
