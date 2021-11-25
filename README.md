@@ -18,6 +18,5 @@ Aozhuo Zhang (300057882)
 1. Install virtualenv using command ```python3 -m pip install --user virtualenv```
 2. Create a virtual environment in project directory using ```python3 -m venv env```
 3. Activate the virtual environment using ```source env/bin/activate```
-4. Install spacy language model using ```python -m spacy download en_core_web_sm ```
-5. Install transformer using ```python -m spacy download en_core_web_trf ```
-6. Run ```main.py``` using the **Python interpreter in virtual environment**
+4. Install the packages specified in ```requirements.txt```
+5. Run ```main.py``` using the **Python interpreter in virtual environment**
