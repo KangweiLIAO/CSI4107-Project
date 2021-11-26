@@ -8,11 +8,15 @@ from inverted_index import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
+
+DOC_FILENAME = "Trec_microblog11.txt"  # Small_docset.txt or Trec_microblog11.txt
+QUERIES_FILENAME = "topics_MB1-49.txt"  # Small_queries.txt or topics_MB1-49.txt
 RESULT_FILENAME = "Results.txt"
-N_MOST_DOC = 1000
+
+N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'tfidf'):
+def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'w2v'):
 	"""
 	Returns a list of doc_id sorted by their scores corresponding to given query.
 
@@ -25,9 +29,8 @@ def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 
 	if pattern == 'tfidf':
 		tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)
 	elif pattern == 'w2v':
-		print("Start training word2vec model...")
 		w2v_algo.train_w2v_model(inv_index.docs_dict)
-		print(f"{CTColors.OKBLUE}word2vec model trained in", str(time.time() - start_time), f"seconds {CTColors.ENDC}")
+		print(f"{CTColors.OKBLUE}word2vec model trained on documents")
 		tmp_scores = w2v_algo.similarity_scores()
 	# Sort the dictionary by score and return a list of sorted doc_id:
 	return sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
@@ -37,14 +40,13 @@ if __name__ == '__main__':
 	# add custom stopwords:
 	utils.add_stopwords(RES_PATH + "StopWords.txt")
 
-	# generate inverted index (Use "Small_queries.txt" and "Small_docset.txt" can be used for fast testing):
+	# generate inverted index:
 	start_time = time.time()
 	print("Preparing inverted index...")
-	index = InvertedIndex(RES_PATH + "Small_docset.txt")
-	print([(k, v) for k, v in index.docs_dict.items()][0])
+	index = InvertedIndex(RES_PATH + DOC_FILENAME)
 	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 	# read queries from a file:
-	queries = utils.read_queries(RES_PATH + "Small_queries.txt")
+	queries = utils.read_queries(RES_PATH + QUERIES_FILENAME)
 
 	# prepare for to save results:
 	try:

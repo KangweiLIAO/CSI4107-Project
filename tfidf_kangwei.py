@@ -3,7 +3,6 @@ from inverted_index import InvertedIndex
 
 
 def similarity_scores(inv_index: InvertedIndex, q_terms: list[str]):
-	print(q_terms)
 	scores_dict: dict[str, float] = {}  # dict[doc_id, score]
 	qtf_dict: dict[str, int] = {}
 	qtfidf_dict: dict[str, float] = {}
