@@ -52,6 +52,18 @@ def preprocess_str(raw_str: str, s_type: str = 'doc') -> list[str]:
 	return [w.text for w in word_tokens]
 
 
+def read_documents(file_path: str):
+	docs_dict = {}
+	doc_files = open(file_path, encoding='utf-8')
+	raw_docs = doc_files.readlines()
+	for each in raw_docs:
+		each = each.split("\t")  # split id and content
+		each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
+		docs_dict[each[0]] = preprocess_str(each[1])  # append to doc dictionary:
+	doc_files.close()
+	return docs_dict
+
+
 def read_queries(file_path: str) -> list[(str, list[str])]:
 	"""
 	Read queries from specified file and preprocess the queries.
@@ -60,7 +72,7 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 	:return: a list of queries with their IDs
 	"""
 	q_id = ''
-	q_list = []  # [(query_id, query_content)]
+	q_list: list[(str, list[str])] = []  # [(query_id, query_content)]
 	try:
 		q_file = open(file_path, encoding='utf-8')
 		for line in q_file:

@@ -25,6 +25,9 @@ def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 
 	if pattern == 'cos':
 		tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)
 	elif pattern == 'w2v':
+		print("Start training word2vec model...")
+		w2v_algo.train_w2v_model(inv_index.docs_dict)
+		print(f"{CTColors.OKBLUE}word2vec model trained in", str(time.time() - start_time), f"seconds {CTColors.ENDC}")
 		tmp_scores = w2v_algo.similarity_scores()
 	# Sort the dictionary by score and return a list of sorted doc_id:
 	return sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
@@ -74,5 +77,5 @@ if __name__ == '__main__':
 		scores = ranking_scores(index, query)
 		# for each query, save the N_MOST_DOC most relevant documents
 		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, qid, scores[:N_MOST_DOC])
-	print("Calculation completed in", str(time.time() - start_time) + " seconds")
+	print("Calculation completed in", str(time.time() - start_time), "seconds")
 	print(f"{CTColors.OKGREEN}Succeed: New [{RESULT_FILENAME}] created in 'out/'.{CTColors.ENDC}")

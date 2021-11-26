@@ -1,74 +1,37 @@
 import math
-import re
 import retrieval_utils as utils
 from retrieval_utils import CTColors
-
-
-class TokenDoc:
-	"""
-	Document object for a document
-	"""
-	id: str
-	terms: list[str]
-
-	def __init__(self, doc_id: str, terms: list[str]):
-		self.id = doc_id
-		self.terms = terms
-
-	def __len__(self):
-		return len(self.terms)
-
-	def __repr__(self):
-		return str(self)
-
-	def __str__(self):
-		return "TokenDoc{" + "docID='" + self.id + '\'' + ", terms=" + str(
-			self.terms) + "}"
 
 
 class InvertedIndex:
 	"""
 	Inverted index object that store the processed documents.
 	"""
-	docs_dict: dict[str, TokenDoc] = {}  # dict[doc_id,TokenDoc]
+	docs_dict: dict[str, list[str]] = {}  # dict[doc_id, list[word]]
 	term_dict: dict[str, list[str]] = {}  # dict[term,list[docID]]
 
 	def __init__(self, docs_path: str):
-		"""
-		Initialize the inverted index with given documents.
-
-		:param docs_path: path to the file containing the documents
-		"""
-		raw_docs: list[str] = []
-		doc_files = open(docs_path, encoding='utf-8')
-		raw_docs = doc_files.readlines()
-		doc_files.close()  # close the doc source file
+		# read documents
+		self.docs_dict = utils.read_documents(docs_path)
 		print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
-
 		# preprocessing:
-		for each in raw_docs:
-			each = each.split("\t")  # split id and content
-			each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
-			# append to doc dictionary:
-			self.docs_dict[each[0]] = TokenDoc(each[0], utils.preprocess_str(each[1]))
-		print(f"{CTColors.OKGREEN}Preprocessing completed.{CTColors.ENDC}")
-
+		print(f"{CTColors.OKGREEN}Preprocessing completed{CTColors.ENDC}")
 		# indexing:
-		for doc in self.docs_dict.values():
-			for token in doc.terms:
+		for d_id, posting in self.docs_dict.items():
+			for token in posting:
 				if token not in self.term_dict.keys():
 					# if term not found in term_dict, create new dict entry: (id, raw_tf)
-					self.term_dict[token] = [doc.id]
-				elif doc.id not in self.term_dict[token]:
+					self.term_dict[token] = [d_id]
+				elif d_id not in self.term_dict[token]:
 					# if term found, append new doc id to the term
-					self.term_dict[token].append(doc.id)
+					self.term_dict[token].append(d_id)
 
 	def get_raw_tf(self, word: str, doc_id: str) -> int:
 		"""
 		Returns the raw term frequency of specific word in a specified document.
 		"""
 		tf = 0
-		for term in self.docs_dict[doc_id].terms:
+		for term in self.docs_dict[doc_id]:
 			if word == term:
 				tf += 1
 		return tf
@@ -92,7 +55,7 @@ class InvertedIndex:
 		Returns the documents length of a specific document.
 		"""
 		result = 0
-		for term in self.docs_dict[doc_id].terms:
+		for term in self.docs_dict[doc_id]:
 			result += self.get_tfidf(term, doc_id) ** 2
 		return math.sqrt(result)
 
