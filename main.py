@@ -2,7 +2,7 @@ import os
 import time
 import retrieval_utils as utils
 import w2v_kangwei as w2v_algo
-import cos_kangwei as cos_algo
+import tfidf_kangwei as cos_algo
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
 
@@ -12,7 +12,7 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000
 
 
-def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'cos'):
+def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'tfidf'):
 	"""
 	Returns a list of doc_id sorted by their scores corresponding to given query.
 
@@ -22,7 +22,7 @@ def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 
 	:return: a list of doc_id sorted by their scores corresponding to given query
 	"""
 	tmp_scores: dict[str, float] = {}  # dict[doc_id, score]
-	if pattern == 'cos':
+	if pattern == 'tfidf':
 		tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)
 	elif pattern == 'w2v':
 		print("Start training word2vec model...")
@@ -37,13 +37,14 @@ if __name__ == '__main__':
 	# add custom stopwords:
 	utils.add_stopwords(RES_PATH + "StopWords.txt")
 
-	# generate inverted index (Use "Small_queries.txt" and "Small_test_set.txt" can be used for fast testing):
+	# generate inverted index (Use "Small_queries.txt" and "Small_docset.txt" can be used for fast testing):
 	start_time = time.time()
 	print("Preparing inverted index...")
-	index = InvertedIndex(RES_PATH + "Trec_microblog11.txt")
+	index = InvertedIndex(RES_PATH + "Small_docset.txt")
+	print([(k, v) for k, v in index.docs_dict.items()][0])
 	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 	# read queries from a file:
-	queries = utils.read_queries(RES_PATH + "topics_MB1-49.txt")
+	queries = utils.read_queries(RES_PATH + "Small_queries.txt")
 
 	# prepare for to save results:
 	try:

@@ -47,9 +47,9 @@ def preprocess_str(raw_str: str, s_type: str = 'doc') -> list[str]:
 	raw_str = raw_str.replace('\n', '').strip()  # format string
 	word_tokens = nlp(raw_str)  # tokenization
 	if not s_type == "query":
-		# stopwords removal and lemmatization:
-		return [w.lemma_ for w in word_tokens if not w.is_stop]
-	return [w.text for w in word_tokens]
+		# if not passed in a query, do stopwords removal and lemmatization:
+		return [w.lemma_.lower() for w in word_tokens if not (w.is_stop or w.like_url or w.like_num)]
+	return [w.text for w in word_tokens if not (w.is_space or w.is_punct)]
 
 
 def read_documents(file_path: str):
