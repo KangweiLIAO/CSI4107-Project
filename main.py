@@ -16,7 +16,7 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'w2v'):
+def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'tfidf'):
 	"""
 	Returns a list of doc_id sorted by their scores corresponding to given query.
 
