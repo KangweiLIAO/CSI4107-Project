@@ -1,14 +1,7 @@
-import nltk
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
+import spacy
 from nltk.stem.porter import *
 
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-stop_words: list[str] = nltk.corpus.stopwords.words('english')
-lemmatizer = WordNetLemmatizer()
+nlp = spacy.load('en_core_web_sm', disable=['ner', 'parser'])
 
 
 class CTColors:
@@ -33,9 +26,9 @@ def add_stopwords(stopwords_path: str):
 	:param stopwords_path: path to stopwords file
 	"""
 	try:
-		# read stop words and put in a set
 		custom_stopwords = open(stopwords_path, encoding='utf-8').readlines()
-		stop_words.extend(custom_stopwords)  # add custom stopwords
+		# add to nlp default stopwords:
+		nlp.Defaults.stop_words |= set([w.replace('\n', '') for w in set(custom_stopwords)])
 	except FileNotFoundError as e:
 		print(
 			f"{CTColors.FAIL}Fail to add custom stop words, since specified stopwords file not found:{CTColors.ENDC}"
@@ -43,7 +36,7 @@ def add_stopwords(stopwords_path: str):
 		print(e)
 
 
-def preprocess_str(raw_str: str, s_type: str = 'doc'):
+def preprocess_str(raw_str: str, s_type: str = 'doc') -> list[str]:
 	"""
 	Return the preprocessed string. Will not remove stopwords if s_type is 'query'.
 
@@ -51,12 +44,12 @@ def preprocess_str(raw_str: str, s_type: str = 'doc'):
 	:param s_type: either 'doc' or 'query', 'doc' in default
 	:return: preprocessed string
 	"""
-	raw_str = raw_str.replace("\n", '').strip()  # format string
-	word_tokens = word_tokenize(raw_str)  # tokenization
-	if not s_type == 'query':
-		word_tokens = [w for w in word_tokens if not w.lower() in stop_words]  # stopwords removal
-	lemmatized_str = [lemmatizer.lemmatize(w) for w in word_tokens]  # lemmatization
-	return lemmatized_str
+	raw_str = raw_str.replace('\n', '').strip()  # format string
+	word_tokens = nlp(raw_str)  # tokenization
+	if not s_type == "query":
+		# stopwords removal and lemmatization:
+		return [w.lemma_ for w in word_tokens if not w.is_stop]
+	return [w.text for w in word_tokens]
 
 
 def read_queries(file_path: str) -> list[(str, list[str])]:
@@ -72,10 +65,11 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 		q_file = open(file_path, encoding='utf-8')
 		for line in q_file:
 			if "<num>" in line:
-				q_id = str(int(re.sub("[^0-9]", "", line)))  # extract query id from the line
+				q_id = str(int(re.sub("[^0-9]", '', line)))  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
-				q_list.append((q_id, preprocess_str(line.replace("<title>", '').replace("</title>", ''), 'query')))
+				q_list.append((q_id, preprocess_str(line.replace("<title>", '').replace("</title>", ''), "query")))
+		print(f"{CTColors.OKGREEN}Queries successfully read.{CTColors.ENDC}")
 	except FileNotFoundError:
 		print(f"{CTColors.FAIL}Specified query file not found.{CTColors.ENDC}")
 	return q_list
@@ -85,6 +79,7 @@ def save_results(file_name: str, q_id: str, scores_list: (str, float)):
 	"""
 	Save the final ranking results in TREC result file format.
 
+	:param q_id: query ID
 	:param file_name: file name for the result file
 	:param scores_list: similarity scores list
 	"""

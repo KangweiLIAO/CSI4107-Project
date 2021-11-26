@@ -1,6 +1,5 @@
 import math
 import re
-import time
 import retrieval_utils as utils
 from retrieval_utils import CTColors
 
@@ -31,7 +30,7 @@ class InvertedIndex:
 	"""
 	Inverted index object that store the processed documents.
 	"""
-	docs_dict: dict[str, TokenDoc] = {}
+	docs_dict: dict[str, TokenDoc] = {}  # dict[doc_id,TokenDoc]
 	term_dict: dict[str, list[str]] = {}  # dict[term,list[docID]]
 
 	def __init__(self, docs_path: str):
@@ -41,23 +40,18 @@ class InvertedIndex:
 		:param docs_path: path to the file containing the documents
 		"""
 		raw_docs: list[str] = []
-
-		start_time = time.time()
-		print("Preparing inverted index...")
-		try:
-			doc_files = open(docs_path, encoding='utf-8')
-			raw_docs = doc_files.readlines()
-			doc_files.close()  # close the doc source file
-			print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
-		except FileNotFoundError as e:
-			print(f"{CTColors.FAIL}Documents file not found:{CTColors.ENDC}")
-			print(e)
+		doc_files = open(docs_path, encoding='utf-8')
+		raw_docs = doc_files.readlines()
+		doc_files.close()  # close the doc source file
+		print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
 
 		# preprocessing:
 		for each in raw_docs:
 			each = each.split("\t")  # split id and content
 			each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
-			self.docs_dict[each[0]] = TokenDoc(each[0], utils.preprocess_str(each[1]))  # append to doc array
+			# append to doc dictionary:
+			self.docs_dict[each[0]] = TokenDoc(each[0], utils.preprocess_str(each[1]))
+		print(f"{CTColors.OKGREEN}Preprocessing completed.{CTColors.ENDC}")
 
 		# indexing:
 		for doc in self.docs_dict.values():
@@ -68,7 +62,6 @@ class InvertedIndex:
 				elif doc.id not in self.term_dict[token]:
 					# if term found, append new doc id to the term
 					self.term_dict[token].append(doc.id)
-		print("Indexing completed in", str(time.time() - start_time) + " seconds")
 
 	def get_raw_tf(self, word: str, doc_id: str) -> int:
 		"""
@@ -102,3 +95,15 @@ class InvertedIndex:
 		for term in self.docs_dict[doc_id].terms:
 			result += self.get_tfidf(term, doc_id) ** 2
 		return math.sqrt(result)
+
+	def __repr__(self):
+		return str(self)
+
+	def __str__(self):
+		tmp = "Documents:\n"
+		for d_id in self.docs_dict:
+			tmp += str(self.docs_dict[d_id]) + "; "
+		tmp += "\nTerms:\n"
+		for term in self.term_dict:
+			tmp += term + str(self.term_dict[term]) + "; "
+		return tmp
