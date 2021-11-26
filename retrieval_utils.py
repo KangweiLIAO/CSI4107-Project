@@ -1,5 +1,5 @@
+import re
 import spacy
-from nltk.stem.porter import *
 
 nlp = spacy.load('en_core_web_sm', disable=['ner', 'parser'])
 
