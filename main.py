@@ -1,7 +1,6 @@
 import os
 import time
 import retrieval_utils as utils
-import w2v_kangwei as w2v_algo
 import cos_kangwei as cos_algo
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
