@@ -36,20 +36,20 @@ def add_stopwords(stopwords_path: str):
 		print(e)
 
 
-def preprocess_str(raw_str: str, s_type: str = 'doc') -> list[str]:
+def preprocess_str(raw_str: str, s_type: str = 'doc'):
 	"""
 	Return the preprocessed string. Will not remove stopwords if s_type is 'query'.
 
 	:param raw_str: raw string read from the file
 	:param s_type: either 'doc' or 'query', 'doc' in default
-	:return: preprocessed string
+	:return: preprocessed string, (and spacy NLP object if input is a query)
 	"""
 	raw_str = raw_str.replace('\n', '').strip()  # format string
-	word_tokens = nlp(raw_str)  # tokenization
+	str_nlp = nlp(raw_str)  # tokenization
 	if not s_type == "query":
 		# if not passed in a query, do stopwords removal and lemmatization:
-		return [w.lemma_.lower() for w in word_tokens if not (w.is_stop or w.like_url or w.like_num)]
-	return [w.text for w in word_tokens if not (w.is_space or w.is_punct)]
+		return [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num)]
+	return [w.text for w in str_nlp if not (w.is_space or w.is_punct)], str_nlp
 
 
 def read_documents(file_path: str):
@@ -66,10 +66,10 @@ def read_documents(file_path: str):
 
 def read_queries(file_path: str) -> list[(str, list[str])]:
 	"""
-	Read queries from specified file and preprocess the queries.
+	Read raw queries from specified file.
 
 	:param file_path: path to the query file
-	:return: a list of queries with their IDs
+	:return: a list of queries [query_id, query_content]
 	"""
 	q_id = ''
 	q_list: list[(str, list[str])] = []  # [(query_id, query_content)]
@@ -80,18 +80,18 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 				q_id = str(int(re.sub("[^0-9]", '', line)))  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
-				q_list.append((q_id, preprocess_str(line.replace("<title>", '').replace("</title>", ''), "query")))
+				q_list.append((q_id, line.replace("<title>", '').replace("</title>", '')))
 		print(f"{CTColors.OKGREEN}Queries successfully read.{CTColors.ENDC}")
 	except FileNotFoundError:
 		print(f"{CTColors.FAIL}Specified query file not found.{CTColors.ENDC}")
 	return q_list
 
 
-def save_results(file_name: str, q_id: str, scores_list: (str, float)):
+def save_result(file_name: str, q_id: str, scores_list: (str, float)):
 	"""
-	Save the final ranking results in TREC result file format.
+	Save ranking results for one query in the TREC result file format.
 
-	:param q_id: query ID
+	:param q_id: the query ID
 	:param file_name: file name for the result file
 	:param scores_list: similarity scores list
 	"""

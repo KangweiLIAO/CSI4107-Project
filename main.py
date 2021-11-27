@@ -16,24 +16,29 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def ranking_scores(inv_index: InvertedIndex, q_terms: list[str], pattern: str = 'tfidf'):
+def rank_and_save(inv_index: InvertedIndex, pattern: str = 'tfidf'):
 	"""
-	Returns a list of doc_id sorted by their scores corresponding to given query.
+	Read queries from file, obtain the scores and save the ranking.
 
-	:param q_terms: a tokenized query
 	:param inv_index: inverted index containing the documents
 	:param pattern: algorithm used to obtain similarity scores (cosine[default], word2vec)
-	:return: a list of doc_id sorted by their scores corresponding to given query
 	"""
-	tmp_scores: dict[str, float] = {}  # dict[doc_id, score]
+	# read queries from a file:
+	queries = utils.read_queries(RES_PATH + QUERIES_FILENAME)
 	if pattern == 'tfidf':
-		tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)
+		print("Calculating TF-IDF vectors...")
+	elif pattern == 'w2v':
+		print("Training Word2Vec model...")
+	if pattern == 'tfidf':
+		for qid, query in queries:
+			q_terms = utils.preprocess_str(query)  # preprocessing query
+			tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)  # dict[doc_id, score]
+			# Sort the dictionary by score and return a list of sorted doc_id:
+			sorted_scores = sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
+			utils.save_result(OUTPUT_PATH + RESULT_FILENAME, qid, sorted_scores[:N_MOST_DOC])
 	elif pattern == 'w2v':
 		w2v_algo.train_w2v_model(inv_index.docs_dict)
-		print(f"{CTColors.OKBLUE}word2vec model trained on documents")
-		tmp_scores = w2v_algo.similarity_scores()
-	# Sort the dictionary by score and return a list of sorted doc_id:
-	return sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
+		tmp_scores = w2v_algo.similarity_scores(inv_index)
 
 
 if __name__ == '__main__':
@@ -45,8 +50,6 @@ if __name__ == '__main__':
 	print("Preparing inverted index...")
 	index = InvertedIndex(RES_PATH + DOC_FILENAME)
 	print("Indexing completed in", str(time.time() - start_time) + " seconds")
-	# read queries from a file:
-	queries = utils.read_queries(RES_PATH + QUERIES_FILENAME)
 
 	# prepare for to save results:
 	try:
@@ -71,14 +74,11 @@ if __name__ == '__main__':
 	except FileNotFoundError as e:
 		# if no old result file found in 'out/' folder:
 		print(
-			f"{CTColors.HEADER}Start generating [{RESULT_FILENAME}] in 'out/' folder.{CTColors.ENDC}")
+			f"Generating [{RESULT_FILENAME}] in 'out/' folder...")
 
 	# obtain cosine scores and save them to a result file:
 	start_time = time.time()
-	print("Calculating similarity scores...")
-	for qid, query in queries:
-		scores = ranking_scores(index, query)
-		# for each query, save the N_MOST_DOC most relevant documents
-		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, qid, scores[:N_MOST_DOC])
-	print("Calculation completed in", str(time.time() - start_time), "seconds")
+	rank_and_save(index)
+	# for each query, save the N_MOST_DOC most relevant documents
+	print("Calculation and ranking completed in", str(time.time() - start_time), "seconds")
 	print(f"{CTColors.OKGREEN}Succeed: New [{RESULT_FILENAME}] created in 'out/'.{CTColors.ENDC}")
