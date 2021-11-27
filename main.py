@@ -38,7 +38,7 @@ def rank_and_save(inv_index: InvertedIndex, pattern: str = 'tfidf'):
 			utils.save_result(OUTPUT_PATH + RESULT_FILENAME, qid, sorted_scores[:N_MOST_DOC])
 	elif pattern == 'w2v':
 		w2v_algo.train_w2v_model(inv_index.docs_dict)
-		tmp_scores = w2v_algo.similarity_scores(inv_index)
+		tmp_scores = w2v_algo.similarity_scores(inv_index, queries)
 
 
 if __name__ == '__main__':

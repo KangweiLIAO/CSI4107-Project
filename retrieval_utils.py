@@ -42,7 +42,7 @@ def preprocess_str(raw_str: str, s_type: str = 'doc'):
 
 	:param raw_str: raw string read from the file
 	:param s_type: either 'doc' or 'query', 'doc' in default
-	:return: preprocessed string, (and spacy NLP object if input is a query)
+	:return: preprocessed str (list[str]); (and spacy NLP object if input is a query)
 	"""
 	raw_str = raw_str.replace('\n', '').strip()  # format string
 	str_nlp = nlp(raw_str)  # tokenization
@@ -52,7 +52,13 @@ def preprocess_str(raw_str: str, s_type: str = 'doc'):
 	return [w.text for w in str_nlp if not (w.is_space or w.is_punct)], str_nlp
 
 
-def read_documents(file_path: str):
+def read_documents(file_path: str) -> dict[str, list[str]]:
+	"""
+	Read documents from specified file and store in a dictionary with (document ID, preprocessed content) pairs
+
+	:param file_path:
+	:return: a dictionary of {doc_id: str, doc_content: list[str]}
+	"""
 	docs_dict = {}
 	doc_files = open(file_path, encoding='utf-8')
 	raw_docs = doc_files.readlines()
