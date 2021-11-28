@@ -16,7 +16,7 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def rank_and_save(inv_index: InvertedIndex, model: str = 'tfidf'):
+def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
 	"""
 	Read queries from file, obtain the scores and save the ranking.
 
@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
 	# generate inverted index:
 	start_time = time.time()
-	print("Preparing inverted index...")
+	print("Preparing inverted index... (~= 100 seconds)")
 	index = InvertedIndex(RES_PATH + DOC_FILENAME)
 	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 
