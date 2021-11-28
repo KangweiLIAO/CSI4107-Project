@@ -36,31 +36,37 @@ def add_stopwords(stopwords_path: str):
 		print(e)
 
 
-def preprocess_str(raw_str: str, s_type: str = 'doc'):
+def preprocess_str(raw_str: str):
 	"""
 	Return the preprocessed string. Will not remove stopwords if s_type is 'query'.
 
 	:param raw_str: raw string read from the file
 	:param s_type: either 'doc' or 'query', 'doc' in default
-	:return: preprocessed string, (and spacy NLP object if input is a query)
+	:return: preprocessed str (list[str]); (and spacy NLP object if input is a query)
 	"""
 	raw_str = raw_str.replace('\n', '').strip()  # format string
-	str_nlp = nlp(raw_str)  # tokenization
-	if not s_type == "query":
-		# if not passed in a query, do stopwords removal and lemmatization:
-		return [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num)]
-	return [w.text for w in str_nlp if not (w.is_space or w.is_punct)], str_nlp
+	str_nlp = nlp(raw_str)
+	# stopwords removal and lemmatization:
+	tmp = [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num or w.is_space or w.is_punct)]
+	return tmp, str_nlp
 
 
-def read_documents(file_path: str):
+def read_documents(file_path: str) -> dict[str, str]:
+	"""
+	Read documents from specified file and store in a dictionary as dict[document ID, raw content]
+
+	:param file_path:
+	:return: a dictionary of {doc_id: str, raw_content: str}
+	"""
 	docs_dict = {}
 	doc_files = open(file_path, encoding='utf-8')
 	raw_docs = doc_files.readlines()
 	for each in raw_docs:
 		each = each.split("\t")  # split id and content
 		each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
-		docs_dict[each[0]] = preprocess_str(each[1])  # append to doc dictionary:
+		docs_dict[each[0]] = each[1]  # append doc content to doc dictionary:
 	doc_files.close()
+	print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
 	return docs_dict
 
 
@@ -80,24 +86,39 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 				q_id = str(int(re.sub("[^0-9]", '', line)))  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
-				q_list.append((q_id, line.replace("<title>", '').replace("</title>", '')))
+				line = replace_all(line, [("<title>", ''), ("</title>", ''), ("\n", '')])
+				q_list.append((q_id, line))
 		print(f"{CTColors.OKGREEN}Queries successfully read.{CTColors.ENDC}")
 	except FileNotFoundError:
 		print(f"{CTColors.FAIL}Specified query file not found.{CTColors.ENDC}")
 	return q_list
 
 
-def save_result(file_name: str, q_id: str, scores_list: (str, float)):
+def save_results(file_name: str, scores_dict: dict[str, list[(str, float)]], doc_per_query=10):
 	"""
 	Save ranking results for one query in the TREC result file format.
 
-	:param q_id: the query ID
 	:param file_name: file name for the result file
-	:param scores_list: similarity scores list
+	:param scores_dict: similarity scores dictionary dict[queryID, list[(doc_id, score)]]
+	:param doc_per_query: number of score record per query [default = 10]
 	"""
 	file = open(file_name, 'a')
-	rank = 1
-	for doc_id, score in scores_list:
-		file.write(f"{q_id} Q0 {doc_id} {rank} {score} Round1\n")
-		rank += 1
+	for q_id, scores in scores_dict.items():
+		rank = 1
+		for pair in scores[:doc_per_query]:
+			file.write(f"{q_id} Q0 {pair[0]} {rank} {pair[1]} Round1\n")
+			rank += 1
 	file.close()
+
+
+def replace_all(string, items: list[(str, str)]):
+	"""
+	Replace multiple substrings of a string
+
+	:param string: the string need to be updated
+	:param items: multiple substrings in form of [(old_word, new_word),...]
+	:return: new string
+	"""
+	for r in items:
+		string = string.replace(*r)
+	return string

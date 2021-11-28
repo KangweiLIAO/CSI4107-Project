@@ -1,8 +1,8 @@
 import os
 import time
 import retrieval_utils as utils
-import w2v_kangwei as w2v_algo
-import tfidf_kangwei as cos_algo
+import word2vec as w2v_algo
+import tfidf as tfidf_algo
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
 
@@ -16,29 +16,26 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def rank_and_save(inv_index: InvertedIndex, pattern: str = 'tfidf'):
+def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
 	"""
 	Read queries from file, obtain the scores and save the ranking.
 
 	:param inv_index: inverted index containing the documents
-	:param pattern: algorithm used to obtain similarity scores (cosine[default], word2vec)
+	:param model: algorithm used to obtain similarity scores (cosine[default], word2vec)
 	"""
 	# read queries from a file:
-	queries = utils.read_queries(RES_PATH + QUERIES_FILENAME)
-	if pattern == 'tfidf':
+	queries: list[(str, list[str])] = utils.read_queries(RES_PATH + QUERIES_FILENAME)
+	# Applying models
+	if model == 'tfidf':
 		print("Calculating TF-IDF vectors...")
-	elif pattern == 'w2v':
+		tmp = tfidf_algo.similarity_scores(inv_index, queries)  # dict[doc_id, score]
+		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
+	elif model == 'w2v':
 		print("Training Word2Vec model...")
-	if pattern == 'tfidf':
-		for qid, query in queries:
-			q_terms = utils.preprocess_str(query)  # preprocessing query
-			tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)  # dict[doc_id, score]
-			# Sort the dictionary by score and return a list of sorted doc_id:
-			sorted_scores = sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
-			utils.save_result(OUTPUT_PATH + RESULT_FILENAME, qid, sorted_scores[:N_MOST_DOC])
-	elif pattern == 'w2v':
-		w2v_algo.train_w2v_model(inv_index.docs_dict)
-		tmp_scores = w2v_algo.similarity_scores(inv_index)
+		tmp = w2v_algo.similarity_scores(inv_index, queries)
+		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
+	elif model == 'd2v':
+		pass
 
 
 if __name__ == '__main__':
@@ -47,7 +44,7 @@ if __name__ == '__main__':
 
 	# generate inverted index:
 	start_time = time.time()
-	print("Preparing inverted index...")
+	print("Preparing inverted index... (~= 100 seconds)")
 	index = InvertedIndex(RES_PATH + DOC_FILENAME)
 	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 
