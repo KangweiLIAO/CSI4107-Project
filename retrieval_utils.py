@@ -86,24 +86,39 @@ def read_queries(file_path: str) -> list[(str, list[str])]:
 				q_id = str(int(re.sub("[^0-9]", '', line)))  # extract query id from the line
 			elif "<title>" in line:
 				# extract raw query string and preprocess it
-				q_list.append((q_id, line.replace("<title>", '').replace("</title>", '')))
+				line = replace_all(line, [("<title>", ''), ("</title>", ''), ("\n", '')])
+				q_list.append((q_id, line))
 		print(f"{CTColors.OKGREEN}Queries successfully read.{CTColors.ENDC}")
 	except FileNotFoundError:
 		print(f"{CTColors.FAIL}Specified query file not found.{CTColors.ENDC}")
 	return q_list
 
 
-def save_result(file_name: str, q_id: str, scores_list: (str, float)):
+def save_results(file_name: str, scores_dict: dict[str, list[(str, float)]], doc_per_query=10):
 	"""
 	Save ranking results for one query in the TREC result file format.
 
-	:param q_id: the query ID
 	:param file_name: file name for the result file
-	:param scores_list: similarity scores list
+	:param scores_dict: similarity scores dictionary dict[queryID, list[(doc_id, score)]]
+	:param doc_per_query: number of score record per query [default = 10]
 	"""
 	file = open(file_name, 'a')
-	rank = 1
-	for doc_id, score in scores_list:
-		file.write(f"{q_id} Q0 {doc_id} {rank} {score} Round1\n")
-		rank += 1
+	for q_id, scores in scores_dict.items():
+		rank = 1
+		for pair in scores[:doc_per_query]:
+			file.write(f"{q_id} Q0 {pair[0]} {rank} {pair[1]} Round1\n")
+			rank += 1
 	file.close()
+
+
+def replace_all(string, items: list[(str, str)]):
+	"""
+	Replace multiple substrings of a string
+
+	:param string: the string need to be updated
+	:param items: multiple substrings in form of [(old_word, new_word),...]
+	:return: new string
+	"""
+	for r in items:
+		string = string.replace(*r)
+	return string

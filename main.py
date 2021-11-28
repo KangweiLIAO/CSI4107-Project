@@ -2,7 +2,7 @@ import os
 import time
 import retrieval_utils as utils
 import word2vec as w2v_algo
-import tfidf as cos_algo
+import tfidf as tfidf_algo
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
 
@@ -28,15 +28,12 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'tfidf'):
 	# Applying models
 	if model == 'tfidf':
 		print("Calculating TF-IDF vectors...")
-		for q_id, q_raw in queries:
-			q_terms = utils.preprocess_str(q_raw)[0]  # preprocessing query
-			tmp_scores = cos_algo.similarity_scores(inv_index, q_terms)  # dict[doc_id, score]
-			# Sort the dictionary by score and return a list of sorted doc_id:
-			sorted_scores = sorted(tmp_scores.items(), key=lambda item: item[1], reverse=True)
-			utils.save_result(OUTPUT_PATH + RESULT_FILENAME, q_id, sorted_scores[:N_MOST_DOC])
+		tmp = tfidf_algo.similarity_scores(inv_index, queries)  # dict[doc_id, score]
+		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
 	elif model == 'w2v':
 		print("Training Word2Vec model...")
-		w2v_algo.similarity_scores(inv_index, queries)
+		tmp = w2v_algo.similarity_scores(inv_index, queries)
+		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
 	elif model == 'd2v':
 		pass
 
