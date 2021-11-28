@@ -7,20 +7,20 @@ class InvertedIndex:
 	"""
 	Inverted index object that store the processed documents.
 	"""
-	docs_dict: dict[str, list[str]] = {}  # dict[doc_id, list[word]]
-	term_dict: dict[str, list[str]] = {}  # dict[term,list[docID]]
+	docs_dict: dict[str, list[str]] = {}  # dict[doc_id, preprocessed_tokens]
+	term_dict: dict[str, list[str]] = {}  # dict[term, posting_list]
 
 	def __init__(self, docs_path: str):
-		# read documents
-		self.docs_dict = utils.read_documents(docs_path)
-		print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
-		# preprocessing:
-		print(f"{CTColors.OKGREEN}Preprocessing completed{CTColors.ENDC}")
+		# read and preprocess documents
+		for k, v in utils.read_documents(docs_path).items():
+			self.docs_dict[k] = utils.preprocess_str(v)[0]
+		print(f"{CTColors.OKGREEN}Documents preprocessing completed{CTColors.ENDC}")
+
 		# indexing:
-		for d_id, posting in self.docs_dict.items():
-			for token in posting:
-				if token not in self.term_dict.keys():
-					# if term not found in term_dict, create new dict entry: (id, raw_tf)
+		for d_id, doc_content in self.docs_dict.items():
+			for token in doc_content:
+				if token not in self.term_dict:
+					# if term not found in term_dict, create new dict entry: [term, first_id]
 					self.term_dict[token] = [d_id]
 				elif d_id not in self.term_dict[token]:
 					# if term found, append new doc id to the term

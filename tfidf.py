@@ -4,8 +4,8 @@ from inverted_index import InvertedIndex
 
 def similarity_scores(inv_index: InvertedIndex, q_terms: list[str]):
 	scores_dict: dict[str, float] = {}  # dict[doc_id, score]
-	qtf_dict: dict[str, int] = {}
-	qtfidf_dict: dict[str, float] = {}
+	qtf_dict: dict[str, int] = {}  # dict[q_term, tf]
+	qtfidf_dict: dict[str, float] = {}  # dict[q_term, tfidf]
 
 	# compute raw tf of q_terms:
 	for term in q_terms:
@@ -15,7 +15,7 @@ def similarity_scores(inv_index: InvertedIndex, q_terms: list[str]):
 		else:
 			qtf_dict[term] += 1
 
-	# compute tf-idf vector of q_terms:
+	# compute tf-idf of q_terms:
 	for term in q_terms:
 		term = term.lower()
 		qtfidf_dict[term] = qtf_dict[term] * inv_index.get_idf(term)

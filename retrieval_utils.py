@@ -36,7 +36,7 @@ def add_stopwords(stopwords_path: str):
 		print(e)
 
 
-def preprocess_str(raw_str: str, s_type: str = 'doc'):
+def preprocess_str(raw_str: str):
 	"""
 	Return the preprocessed string. Will not remove stopwords if s_type is 'query'.
 
@@ -45,19 +45,18 @@ def preprocess_str(raw_str: str, s_type: str = 'doc'):
 	:return: preprocessed str (list[str]); (and spacy NLP object if input is a query)
 	"""
 	raw_str = raw_str.replace('\n', '').strip()  # format string
-	str_nlp = nlp(raw_str)  # tokenization
-	if not s_type == "query":
-		# if not passed in a query, do stopwords removal and lemmatization:
-		return [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num)]
-	return [w.text for w in str_nlp if not (w.is_space or w.is_punct)], str_nlp
+	str_nlp = nlp(raw_str)
+	# stopwords removal and lemmatization:
+	tmp = [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num or w.is_space or w.is_punct)]
+	return tmp, str_nlp
 
 
-def read_documents(file_path: str) -> dict[str, list[str]]:
+def read_documents(file_path: str) -> dict[str, str]:
 	"""
-	Read documents from specified file and store in a dictionary with (document ID, preprocessed content) pairs
+	Read documents from specified file and store in a dictionary as dict[document ID, raw content]
 
 	:param file_path:
-	:return: a dictionary of {doc_id: str, doc_content: list[str]}
+	:return: a dictionary of {doc_id: str, raw_content: str}
 	"""
 	docs_dict = {}
 	doc_files = open(file_path, encoding='utf-8')
@@ -65,8 +64,9 @@ def read_documents(file_path: str) -> dict[str, list[str]]:
 	for each in raw_docs:
 		each = each.split("\t")  # split id and content
 		each[0] = re.sub("[^0-9]", "", each[0])  # remove non-numerical char for doc id
-		docs_dict[each[0]] = preprocess_str(each[1])  # append to doc dictionary:
+		docs_dict[each[0]] = each[1]  # append doc content to doc dictionary:
 	doc_files.close()
+	print(f"{CTColors.OKGREEN}Documents successfully read.{CTColors.ENDC}")
 	return docs_dict
 
 
