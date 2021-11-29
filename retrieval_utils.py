@@ -48,7 +48,7 @@ def preprocess_str(raw_str: str):
 	str_nlp = nlp(raw_str)
 	# stopwords removal and lemmatization:
 	tmp = [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num or w.is_space or w.is_punct)]
-	return tmp, str_nlp
+	return tmp
 
 
 def read_documents(file_path: str) -> dict[str, str]:

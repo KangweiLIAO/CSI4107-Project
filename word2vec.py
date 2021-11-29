@@ -15,14 +15,23 @@ def train_w2v_model(train_data: dict[str, list[str]]) -> Word2Vec:
 	return sg_model
 
 
-def similarity_scores(inv_index: InvertedIndex, queries, topn=3):
+def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=3):
+	"""
+	Train the word2vec model and do the query expansion. Finally return a ranked result for input queries on all documents
+	in inv_index.
+
+	:param inv_index: a inverted index object
+	:param queries: raw queries with query ids
+	:param topn: how many synonyms add to query [default=3]
+	:return:
+	"""
 	model = train_w2v_model(inv_index.docs_dict)
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
 	tmp_dict = corpora.Dictionary([doc for _, doc in inv_index.docs_dict.items()])
-	print("Calculating similarity scores with expanded queries...")
+	print("Calculating similarity scores with expanded queries... (~= 25s)")
 	for q_id, q_raw in queries:
 		scores_dict[q_id] = []
-		q_terms = utils.preprocess_str(q_raw)[0]
+		q_terms = utils.preprocess_str(q_raw)
 		tmp = []
 		for term in q_terms:
 			tmp += [pair[0] for pair in model.wv.most_similar(term, topn=topn)]

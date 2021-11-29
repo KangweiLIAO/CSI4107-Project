@@ -52,7 +52,7 @@ def similarity_scores(dic, queries):
     # Predict
     results = {}
     for pair in queries:
-        preprocess_query = utils.preprocess_str(pair[1])[0]
+        preprocess_query = utils.preprocess_str(pair[1])
         print(preprocess_query)
         inferred_vector = model.infer_vector(doc_words=preprocess_query, epochs=20)
         # sims = (id,score) 10 tuples

@@ -15,16 +15,18 @@ class InvertedIndex:
 		read_succeeded = False
 		if not read_from == '':
 			try:
-				self.load()
+				self.load()  # try load from local files
 				print(f"{CTColors.OKGREEN}Inverted Index config file successfully read.{CTColors.ENDC}")
 				read_succeeded = True
 			except FileNotFoundError as e:
 				print(f"{CTColors.WARNING}No Inverted Index config file detected,", end=' ')
 				print(f"creating new inverted index object...{CTColors.ENDC}")
 		if not read_succeeded:
+			docs_dict = {}
+			term_dict = {}
 			# read and preprocess documents
 			for k, v in utils.read_documents(docs_path).items():
-				self.docs_dict[k] = utils.preprocess_str(v)[0]
+				self.docs_dict[k] = utils.preprocess_str(v)
 			print(f"{CTColors.OKGREEN}Documents preprocessing completed{CTColors.ENDC}")
 
 			# indexing:
@@ -36,8 +38,7 @@ class InvertedIndex:
 					elif d_id not in self.term_dict[token]:
 						# if term found, append new doc id to the term
 						self.term_dict[token].append(d_id)
-			self.save()
-
+			self.save()  # save this inverted index object
 
 	def get_raw_tf(self, word: str, doc_id: str) -> int:
 		"""
@@ -72,7 +73,7 @@ class InvertedIndex:
 			result += self.get_tfidf(term, doc_id) ** 2
 		return math.sqrt(result)
 
-	def load(self, filename: str = "InvertedIndex.ii"):
+	def load(self):
 		with open("doc_save.ii", 'rb') as file:
 			self.docs_dict = pickle.load(file)
 			file.close()
@@ -80,7 +81,7 @@ class InvertedIndex:
 			self.term_dict = pickle.load(file)
 			file.close()
 
-	def save(self, filename: str = "InvertedIndex.ii"):
+	def save(self):
 		with open("doc_save.ii", 'wb') as file:
 			pickle.dump(self.docs_dict, file)
 			file.close()

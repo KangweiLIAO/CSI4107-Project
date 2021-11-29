@@ -7,7 +7,7 @@ def similarity_scores(inv_index: InvertedIndex, queries):
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
 	for q_id, q_raw in queries:
 		scores_dict[q_id] = []
-		q_terms = utils.preprocess_str(q_raw)[0]  # preprocessing query
+		q_terms = utils.preprocess_str(q_raw)  # preprocessing query
 		qtf_dict: dict[str, int] = {}  # dict[q_term, tf]
 		qtfidf_dict: dict[str, float] = {}  # dict[q_term, tfidf]
 
