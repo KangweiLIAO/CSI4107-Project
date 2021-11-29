@@ -1,21 +1,30 @@
+import time
+import numpy as np
+from numpy import dot
+from numpy.linalg import norm
 import retrieval_utils as utils
 from inverted_index import InvertedIndex
-from gensim import corpora
 from gensim.models import Word2Vec
-from gensim.matutils import cossim
 from retrieval_utils import CTColors
 
 
-def train_w2v_model(train_data: dict[str, list[str]]) -> Word2Vec:
+def train_w2v_model(train_data: dict[str, list[str]], sg=1) -> Word2Vec:
+	"""
+	Train a word2vec model based on the training data
+
+	:param train_data:
+	:param sg: 0 for CBOW, 1 for skip-gram [default=1]
+	:return: Word2Vec model
+	"""
 	train_data = [words for words in train_data.values()]
 	# train a skip-gram model:
-	sg_model = Word2Vec(sentences=train_data, vector_size=300, alpha=0.08, min_count=2, window=5, sg=1, workers=4)
+	model = Word2Vec(sentences=train_data, vector_size=300, alpha=0.08, min_count=2, window=5, sg=sg, workers=4)
 	print(f'{CTColors.OKBLUE}Trained Completed - Vocabulary size:' + str(
-		len(sg_model.wv.index_to_key)) + f"{CTColors.ENDC}")
-	return sg_model
+		len(model.wv.index_to_key)) + f"{CTColors.ENDC}")
+	return model
 
 
-def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=3):
+def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=10):
 	"""
 	Train the word2vec model and do the query expansion. Finally return a ranked result for input queries on all documents
 	in inv_index.
@@ -25,21 +34,52 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 	:param topn: how many synonyms add to query [default=3]
 	:return:
 	"""
-	model = train_w2v_model(inv_index.docs_dict)
+	start_time = time.time()
+	model = train_w2v_model(inv_index.docs_dict).wv
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
-	tmp_dict = corpora.Dictionary([doc for _, doc in inv_index.docs_dict.items()])
-	print("Calculating similarity scores with expanded queries... (~= 25s)")
+	print("Calculating similarity scores with expanded queries... (~= 50s)")
 	for q_id, q_raw in queries:
 		scores_dict[q_id] = []
 		q_terms = utils.preprocess_str(q_raw)
 		tmp = []
+
 		for term in q_terms:
-			tmp += [pair[0] for pair in model.wv.most_similar(term, topn=topn)]
+			tmp += [pair[0] for pair in model.most_similar(term, topn=topn)]
+			tmp.append(term)
 		q_terms += tmp
-		new_query_bow = tmp_dict.doc2bow(q_terms)
+
+		q_vec = get_mean_vector(model, q_terms)
 		for d_id, doc in inv_index.docs_dict.items():
-			doc_bow = tmp_dict.doc2bow(doc)
-			scores_dict[q_id].append((d_id, cossim(new_query_bow, doc_bow)))
+			doc_avg_vec = get_mean_vector(model, doc)
+			if len(doc_avg_vec) > 0:
+				scores_dict[q_id].append((d_id, np_cossim(q_vec, doc_avg_vec)))
+			else:
+				scores_dict[q_id].append((d_id, 0))
 		sorted_scores = sorted(scores_dict[q_id], key=lambda item: item[1], reverse=True)
 		scores_dict[q_id] = sorted_scores
+	print("Calculation and ranking completed in", str(time.time() - start_time)[:6], "seconds")
 	return scores_dict
+
+
+def get_mean_vector(w2v_model, words):
+	"""
+	Calculate and return the mean vector of the words in given word2vec model.
+
+	:param w2v_model: gensim word2vec model (.wv)
+	:param words:
+	:return:
+	"""
+	words = [word for word in words if word in w2v_model.key_to_index]  # remove out-of-vocabulary words
+	if len(words) >= 1:
+		return np.mean(w2v_model[words], axis=0)
+	else:
+		return []
+
+
+def np_cossim(vec1, vec2):
+	"""
+	Calculate the cosine similarity of given vectors (np.array).
+
+	:return: the cosine similarity of vec1 and vec2
+	"""
+	return dot(vec1, vec2) / (norm(vec1) * norm(vec2))
