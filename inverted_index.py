@@ -1,3 +1,4 @@
+import pickle
 import math
 import retrieval_utils as utils
 from retrieval_utils import CTColors
@@ -10,21 +11,33 @@ class InvertedIndex:
 	docs_dict: dict[str, list[str]] = {}  # dict[doc_id, preprocessed_tokens]
 	term_dict: dict[str, list[str]] = {}  # dict[term, posting_list]
 
-	def __init__(self, docs_path: str):
-		# read and preprocess documents
-		for k, v in utils.read_documents(docs_path).items():
-			self.docs_dict[k] = utils.preprocess_str(v)[0]
-		print(f"{CTColors.OKGREEN}Documents preprocessing completed{CTColors.ENDC}")
+	def __init__(self, docs_path: str, read_from: str = ''):
+		read_succeeded = False
+		if not read_from == '':
+			try:
+				self.load()
+				print(f"{CTColors.OKGREEN}Inverted Index config file successfully read.{CTColors.ENDC}")
+				read_succeeded = True
+			except FileNotFoundError as e:
+				print(f"{CTColors.WARNING}No Inverted Index config file detected,", end=' ')
+				print(f"creating new inverted index object...{CTColors.ENDC}")
+		if not read_succeeded:
+			# read and preprocess documents
+			for k, v in utils.read_documents(docs_path).items():
+				self.docs_dict[k] = utils.preprocess_str(v)[0]
+			print(f"{CTColors.OKGREEN}Documents preprocessing completed{CTColors.ENDC}")
 
-		# indexing:
-		for d_id, doc_content in self.docs_dict.items():
-			for token in doc_content:
-				if token not in self.term_dict:
-					# if term not found in term_dict, create new dict entry: [term, first_id]
-					self.term_dict[token] = [d_id]
-				elif d_id not in self.term_dict[token]:
-					# if term found, append new doc id to the term
-					self.term_dict[token].append(d_id)
+			# indexing:
+			for d_id, doc_content in self.docs_dict.items():
+				for token in doc_content:
+					if token not in self.term_dict:
+						# if term not found in term_dict, create new dict entry: [term, first_id]
+						self.term_dict[token] = [d_id]
+					elif d_id not in self.term_dict[token]:
+						# if term found, append new doc id to the term
+						self.term_dict[token].append(d_id)
+			self.save()
+
 
 	def get_raw_tf(self, word: str, doc_id: str) -> int:
 		"""
@@ -58,6 +71,22 @@ class InvertedIndex:
 		for term in self.docs_dict[doc_id]:
 			result += self.get_tfidf(term, doc_id) ** 2
 		return math.sqrt(result)
+
+	def load(self, filename: str = "InvertedIndex.ii"):
+		with open("doc_save.ii", 'rb') as file:
+			self.docs_dict = pickle.load(file)
+			file.close()
+		with open("terms_save.ii", 'rb') as file:
+			self.term_dict = pickle.load(file)
+			file.close()
+
+	def save(self, filename: str = "InvertedIndex.ii"):
+		with open("doc_save.ii", 'wb') as file:
+			pickle.dump(self.docs_dict, file)
+			file.close()
+		with open("terms_save.ii", 'wb') as file:
+			pickle.dump(self.docs_dict, file)
+			file.close()
 
 	def __repr__(self):
 		return str(self)
