@@ -1,6 +1,7 @@
 import os
 import time
 import retrieval_utils as utils
+import doc2vec as d2v_algo
 import word2vec as w2v_algo
 import tfidf as tfidf_algo
 from inverted_index import InvertedIndex
@@ -29,14 +30,17 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
 	# Applying models
 	if model == 'tfidf':
 		print("Calculating TF-IDF vectors...")
-		result = tfidf_algo.similarity_scores(inv_index, queries)  # dict[doc_id, score]
+		result = tfidf_algo.similarity_scores(inv_index, queries)
 	elif model == 'w2v':
 		print("Training Word2Vec model...")
 		result = w2v_algo.similarity_scores(inv_index, queries)
 	elif model == 'd2v':
-		pass
+		print("Training Doc2Vec model...")
+		result = d2v_algo.similarity_scores(inv_index, queries)
+	else:
+		result = None  # dict[doc_id, score]
 
-	# prepare for to save results:
+	# prepare to save the results:
 	try:
 		os.mkdir(OUTPUT_PATH)  # Try create '/out' directory
 	except FileExistsError as e:
@@ -58,9 +62,9 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
 			exit()  # exit program
 	except FileNotFoundError as e:
 		# if no old result file found in 'out/' folder:
-		print(
-			f"Generating [{RESULT_FILENAME}] in 'out/' folder...")
-	utils.save_results(OUTPUT_PATH + RESULT_FILENAME, result, N_MOST_DOC)
+		print(f"Generating [{RESULT_FILENAME}] in 'out/' folder...")
+	if result is not None:
+		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, result, N_MOST_DOC)
 
 
 if __name__ == '__main__':
@@ -69,12 +73,10 @@ if __name__ == '__main__':
 
 	# generate inverted index:
 	start_time = time.time()
-	print("Preparing inverted index... (~= 100 seconds if no config file provided)")
+	print("Preparing inverted index... (~= 100 seconds if no config file (.ii) provided)")
 	index = InvertedIndex(RES_PATH + DOC_FILENAME, RES_PATH + "inverted_index.ii")
-	print("Indexing completed in", str(time.time() - start_time) + " seconds")
+	print("Indexing completed in", str(time.time() - start_time)[:8] + " seconds")
 
 	# obtain cosine scores and save them to a result file:
-	start_time = time.time()
 	rank_and_save(index)
-	print("Calculation and ranking completed in", str(time.time() - start_time), "seconds")
 	print(f"{CTColors.OKGREEN}Succeed: New [{RESULT_FILENAME}] created in 'out/'.{CTColors.ENDC}")

@@ -1,9 +1,11 @@
+import time
 import math
 import retrieval_utils as utils
 from inverted_index import InvertedIndex
 
 
 def similarity_scores(inv_index: InvertedIndex, queries):
+	start_time = time.time()
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
 	for q_id, q_raw in queries:
 		scores_dict[q_id] = []
@@ -39,4 +41,5 @@ def similarity_scores(inv_index: InvertedIndex, queries):
 			scores_dict[q_id].append((d_id, score))
 		sorted_scores = sorted(scores_dict[q_id], key=lambda item: item[1], reverse=True)
 		scores_dict[q_id] = sorted_scores
+	print("Calculation and ranking completed in", str(time.time() - start_time)[:6], "seconds")
 	return scores_dict
