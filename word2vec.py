@@ -1,7 +1,5 @@
 import time
 import numpy as np
-from numpy import dot
-from numpy.linalg import norm
 import retrieval_utils as utils
 from inverted_index import InvertedIndex
 from gensim.models import Word2Vec
@@ -18,13 +16,13 @@ def train_w2v_model(train_data: dict[str, list[str]], sg=1) -> Word2Vec:
 	"""
 	train_data = [words for words in train_data.values()]
 	# train a skip-gram model:
-	model = Word2Vec(sentences=train_data, vector_size=300, alpha=0.08, min_count=2, window=5, sg=sg, workers=4)
+	model = Word2Vec(sentences=train_data, vector_size=300, alpha=0.1, min_count=2, window=5, sg=sg, workers=4)
 	print(f'{CTColors.OKBLUE}Trained Completed - Vocabulary size:' + str(
 		len(model.wv.index_to_key)) + f"{CTColors.ENDC}")
 	return model
 
 
-def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=10):
+def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=3, doc_per_query=1000):
 	"""
 	Train the word2vec model and do the query expansion. Finally return a ranked result for input queries on all documents
 	in inv_index.
@@ -32,6 +30,7 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 	:param inv_index: a inverted index object
 	:param queries: raw queries with query ids
 	:param topn: how many synonyms add to query [default=3]
+	:param doc_per_query: maintain doc_per_query score records
 	:return:
 	"""
 	start_time = time.time()
@@ -43,6 +42,7 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 		q_terms = utils.preprocess_str(q_raw)
 		tmp = []
 
+		# Query expansion:
 		for term in q_terms:
 			tmp += [pair[0] for pair in model.most_similar(term, topn=topn)]
 			tmp.append(term)
@@ -52,11 +52,10 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 		for d_id, doc in inv_index.docs_dict.items():
 			doc_avg_vec = get_mean_vector(model, doc)
 			if len(doc_avg_vec) > 0:
-				scores_dict[q_id].append((d_id, np_cossim(q_vec, doc_avg_vec)))
+				scores_dict[q_id].append((d_id, utils.np_cossim(q_vec, doc_avg_vec)))
 			else:
 				scores_dict[q_id].append((d_id, 0))
-		sorted_scores = sorted(scores_dict[q_id], key=lambda item: item[1], reverse=True)
-		scores_dict[q_id] = sorted_scores
+		scores_dict[q_id] = sorted(scores_dict[q_id], key=lambda item: item[1], reverse=True)[:doc_per_query]
 	print("Calculation and ranking completed in", str(time.time() - start_time)[:6], "seconds")
 	return scores_dict
 
@@ -74,12 +73,3 @@ def get_mean_vector(w2v_model, words):
 		return np.mean(w2v_model[words], axis=0)
 	else:
 		return []
-
-
-def np_cossim(vec1, vec2):
-	"""
-	Calculate the cosine similarity of given vectors (np.array).
-
-	:return: the cosine similarity of vec1 and vec2
-	"""
-	return dot(vec1, vec2) / (norm(vec1) * norm(vec2))

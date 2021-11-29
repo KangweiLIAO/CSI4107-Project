@@ -17,7 +17,7 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
+def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
 	"""
 	Read queries from file, obtain the scores and save the ranking.
 
