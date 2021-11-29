@@ -23,30 +23,18 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'w2v'):
 	:param inv_index: inverted index containing the documents
 	:param model: algorithm used to obtain similarity scores (cosine[default], word2vec)
 	"""
+
 	# read queries from a file:
 	queries: list[(str, list[str])] = utils.read_queries(RES_PATH + QUERIES_FILENAME)
 	# Applying models
 	if model == 'tfidf':
 		print("Calculating TF-IDF vectors...")
-		tmp = tfidf_algo.similarity_scores(inv_index, queries)  # dict[doc_id, score]
-		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
+		result = tfidf_algo.similarity_scores(inv_index, queries)  # dict[doc_id, score]
 	elif model == 'w2v':
 		print("Training Word2Vec model...")
-		tmp = w2v_algo.similarity_scores(inv_index, queries)
-		utils.save_results(OUTPUT_PATH + RESULT_FILENAME, tmp, N_MOST_DOC)
+		result = w2v_algo.similarity_scores(inv_index, queries)
 	elif model == 'd2v':
 		pass
-
-
-if __name__ == '__main__':
-	# add custom stopwords:
-	utils.add_stopwords(RES_PATH + "StopWords.txt")
-
-	# generate inverted index:
-	start_time = time.time()
-	print("Preparing inverted index... (~= 100 seconds)")
-	index = InvertedIndex(RES_PATH + DOC_FILENAME)
-	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 
 	# prepare for to save results:
 	try:
@@ -72,10 +60,21 @@ if __name__ == '__main__':
 		# if no old result file found in 'out/' folder:
 		print(
 			f"Generating [{RESULT_FILENAME}] in 'out/' folder...")
+	utils.save_results(OUTPUT_PATH + RESULT_FILENAME, result, N_MOST_DOC)
+
+
+if __name__ == '__main__':
+	# add custom stopwords:
+	utils.add_stopwords(RES_PATH + "StopWords.txt")
+
+	# generate inverted index:
+	start_time = time.time()
+	print("Preparing inverted index... (~= 100 seconds if no config file provided)")
+	index = InvertedIndex(RES_PATH + DOC_FILENAME, RES_PATH + "inverted_index.ii")
+	print("Indexing completed in", str(time.time() - start_time) + " seconds")
 
 	# obtain cosine scores and save them to a result file:
 	start_time = time.time()
 	rank_and_save(index)
-	# for each query, save the N_MOST_DOC most relevant documents
 	print("Calculation and ranking completed in", str(time.time() - start_time), "seconds")
 	print(f"{CTColors.OKGREEN}Succeed: New [{RESULT_FILENAME}] created in 'out/'.{CTColors.ENDC}")
