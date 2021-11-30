@@ -1,18 +1,16 @@
 # CSI4107 Assignment 2
 ## Teamwork Distribution
 Langqing Zou (300035036)
-- Responsible for **Processing section**.
-- Responsible for **Returing result file section**.
-- Responsible for writing **README.md**.
+- Responsible for **Doc2Vec Algorithm**.
+- Responsible for writing **Report**.
 
 Kangwei Liao (8568800)
-- Responsible for **Indexing Section**.
-- Responsible for **Evaluation Section**.
-- Responsible for **code integration** and **final check**.
+- Responsible for **Wor2Vec Algorithm**.
+- Responsible for **Code Integration** and **Final Check**.
+- Responsible for writing **Report**.
 
 Aozhuo Zhang (300057882)
-- Responsible for **Retrieval and Ranking Section**.
-- Responsible for writing **README.md**.
+- Responsible for ** **.
 
 ## Steps To Run (Python 3.9 required)
 1. Make sure the python version >= 3.9
@@ -21,3 +19,19 @@ Aozhuo Zhang (300057882)
 4. Activate the virtual environment using ```source env/bin/activate``` (Mac OS)
 5. Install the packages specified in ```requirements.txt```
 6. Run ```main.py``` using the **Python interpreter in virtual environment**
+
+## The functionality of the programs
+
+## Algorithms and Data Structures
+
+## First 10 answers to queries 3 and 20
+
+### TF-IDF Algorithm
+#### Discussion
+#### MAP and P@10
+### Word2Vec Algorithm
+#### Discussion
+#### MAP and P@10
+### Doc2Vec Algorithm
+#### Discussion
+#### MAP and P@10
