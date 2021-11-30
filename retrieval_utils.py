@@ -115,7 +115,7 @@ def save_results(file_name: str, scores_dict: dict[str, list[(str, float)]], doc
 
 def np_cossim(vec1, vec2):
 	"""
-	Calculate the cosine similarity of given vectors (np.array).
+	Calculate the cosine similarity of given vectors (ndarray).
 
 	:return: the cosine similarity of vec1 and vec2
 	"""

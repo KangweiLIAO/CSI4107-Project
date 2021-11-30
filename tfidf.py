@@ -28,7 +28,7 @@ def similarity_scores(inv_index: InvertedIndex, queries):
 		q_length = math.sqrt(sum([x ** 2 for x in qtfidf_dict.values()]))  # compute length of query vector
 
 		# compute cosine similarity between the query and all docs:
-		for d_id, d_words in inv_index.docs_dict.items():
+		for d_id, d_words in inv_index.pred_docs_dict.items():
 			score = 0
 			common_terms = list(set(d_words).intersection(q_terms))
 			for term in common_terms:

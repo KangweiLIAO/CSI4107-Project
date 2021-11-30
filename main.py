@@ -9,6 +9,7 @@ from inverted_index import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
+SAVE_PATH = os.getcwd() + "/saves/"
 
 DOC_FILENAME = "Trec_microblog11.txt"  # Small_docset.txt or Trec_microblog11.txt
 QUERIES_FILENAME = "topics_MB1-49.txt"  # Small_queries.txt or topics_MB1-49.txt
@@ -32,10 +33,8 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
 		print("Calculating TF-IDF vectors...")
 		result = tfidf_algo.similarity_scores(inv_index, queries)
 	elif model == 'w2v':
-		print("Training Word2Vec model...")
 		result = w2v_algo.similarity_scores(inv_index, queries)
 	elif model == 'd2v':
-		print("Training Doc2Vec model...")
 		result = d2v_algo.similarity_scores(inv_index, queries)
 	else:
 		result = None  # dict[doc_id, score]
@@ -73,8 +72,12 @@ if __name__ == '__main__':
 
 	# generate inverted index:
 	start_time = time.time()
+	try:
+		os.mkdir(SAVE_PATH)  # Try create '/saves' directory
+	except FileExistsError as e:
+		pass  # ignore FileExistsError, if '/saves' directory exist
 	print("Preparing inverted index... (~= 100 seconds if no config file (.ii) provided)")
-	index = InvertedIndex(RES_PATH + DOC_FILENAME, RES_PATH + "inverted_index.ii")
+	index = InvertedIndex(RES_PATH + DOC_FILENAME, SAVE_PATH, RES_PATH + "inverted_index.ii")
 	print("Indexing completed in", str(time.time() - start_time)[:8] + " seconds")
 
 	# obtain cosine scores and save them to a result file:
