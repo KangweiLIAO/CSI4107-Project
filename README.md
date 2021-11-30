@@ -21,17 +21,28 @@ Aozhuo Zhang (300057882)
 6. Run ```main.py``` using the **Python interpreter in virtual environment**
 
 ## The functionality of the programs
+Firstly, the program deals with the collection which is the tweet messages by tokenizing and removing stop words. As for the tokenization,
+the program removes all the symbol in the collection. For example, "Latest::" will be "Latest". Also, the program scan the collection and remove
+words appeared in stopwords.txt.<br>
+Secondly, the program generated an inverted index based on the collection which is from above. The inverted index stores the terms and its 
+document frequency and term frency.<br>
+Thirdly, the program could retreve qureies and output the top 10 related Twitter comments by using the tf-idf algorithm, word2vec algorithm and doc2vec algorithm respectively for simiar calculate.
+
 
 ## Algorithms and Data Structures
+We use three algotithms here. 
+### TF-IDF
+### Word2Vec
+### Doc2Vec
 
 ## First 10 answers to queries 3 and 20
 
 ### TF-IDF Algorithm
-#### Discussion
+#### Screenshot
 #### MAP and P@10
 ### Word2Vec Algorithm
-#### Discussion
+#### Screenshot
 #### MAP and P@10
 ### Doc2Vec Algorithm
-#### Discussion
+#### Screenshot
 #### MAP and P@10
