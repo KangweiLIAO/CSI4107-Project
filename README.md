@@ -1,13 +1,14 @@
 # CSI4107 Assignment 2
 ## Teamwork Distribution
 Langqing Zou (300035036)
-- Responsible for **Doc2Vec Algorithm**.
-- Responsible for writing **Report**.
+### Responsible for **Doc2Vec Algorithm**
+I use doc2vec
+
 
 Kangwei Liao (8568800)
-- Responsible for **Wor2Vec Algorithm**.
-- Responsible for **Code Integration** and **Final Check**.
-- Responsible for writing **Report**.
+### Responsible for **Wor2Vec Algorithm**
+### Responsible for **Code Integration** and **Final Check**
+
 
 Aozhuo Zhang (300057882)
 - Responsible for ** **.
