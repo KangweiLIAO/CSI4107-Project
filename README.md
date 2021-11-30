@@ -1,17 +1,17 @@
 # CSI4107 Assignment 2
 ## Teamwork Distribution
-Langqing Zou (300035036)
-### Responsible for **Doc2Vec Algorithm**
-I use doc2vec
+**Langqing Zou (300035036)**
+1. Responsible for **Doc2Vec Algorithm** <br>
+I use doc2vec to ....... During the process, I found..... In the end, I got the results of ....
 
 
-Kangwei Liao (8568800)
-### Responsible for **Wor2Vec Algorithm**
-### Responsible for **Code Integration** and **Final Check**
+**Kangwei Liao (8568800)**
+1. Responsible for **Wor2Vec Algorithm**
+2. Responsible for **Code Integration** and **Final Check**
 
 
-Aozhuo Zhang (300057882)
-- Responsible for ** **.
+**Aozhuo Zhang (300057882)**
+
 
 ## Steps To Run (Python 3.9 required)
 1. Make sure the python version >= 3.9
