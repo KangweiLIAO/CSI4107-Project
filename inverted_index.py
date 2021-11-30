@@ -86,7 +86,7 @@ class InvertedIndex:
 			pickle.dump(self.docs_dict, file)
 			file.close()
 		with open("terms_save.ii", 'wb') as file:
-			pickle.dump(self.docs_dict, file)
+			pickle.dump(self.term_dict, file)
 			file.close()
 
 	def __repr__(self):
