@@ -1,55 +1,35 @@
-import os
-import gensim
-from gensim.models import Doc2Vec
+import time
+import multiprocessing
+import retrieval_utils as utils
 from inverted_index import InvertedIndex
-
-# Assume we have a dictionary that contains all words without symbols and stop-words
-# tokenDic = [[words in doc1],[words in doc2],[words in doc3]....]
-# dic = {doc1:[],doc2:[].....} {String:String}
+from retrieval_utils import CTColors
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 
 
-RES_PATH = os.getcwd() + "/res/"
-DOC_FILENAME = "Trec_microblog11.txt"
-
-# extract every message as whole
-
-TaggededDocument = gensim.models.doc2vec.TaggedDocument
-
-"""
-Returns the training data for doc2vec. The structure of training data should be: 
-[TaggedDocument[['list','of','word'], [TAG_001]],
-TaggedDocument[['list','of','word'], [TAG_002]],
-...
-]
-:param dic: The dictionary from twitter messages
-:return trainset: The training dataset for doc2vec
-"""
+def train_d2v_model(docs_dict):
+	print("Training Doc2Vec model... (~= s)")
+	start_time = time.time()
+	# Prepare training set
+	train_set = [TaggedDocument(docs_dict[key], tags=[key]) for key in docs_dict]
+	model = Doc2Vec(vector_size=100, dm=1, alpha=0.01, window=5, workers=multiprocessing.cpu_count(),
+					epochs=30)
+	model.build_vocab(train_set)
+	model.train(train_set, epochs=model.epochs, total_examples=model.corpus_count)
+	print(f"{CTColors.OKBLUE}Training completed in", str(time.time() - start_time)[:6], f"seconds.{CTColors.ENDC}")
+	return model
 
 
-def train_data(dic):
-    train_set = []
-    for key in dic:
-        document = TaggededDocument(dic[key], tags=[key])
-        train_set.append(document)
-    return train_set
-
-
-def train_Doc2Vec(train_set):
-    model = Doc2Vec(train_set, min_count=1, window=3, size=100, sample=1e-3, workers=4)
-    model.train(train_set, total_examples=model.corpus_count, epochs=10)
-    # print(model.corpus_count)
-    return model
-
-
-# query: "skye is so cute"
-def predict(model, query):
-    test_text = query.split(' ')
-    inferred_vector = model.infer_vector(doc_words=test_text, alpha=0.025, steps=300)
-    # sims = (id,score) 10 tuples
-    sims = model.docvecs.most_similar([inferred_vector], topn=10)  # 10 most similar message
-    return sims
-
-
-if __name__ == '__main__':
-    index = InvertedIndex(RES_PATH + DOC_FILENAME)
-    print(index)
+def similarity_scores(index: InvertedIndex, queries: list[(str, list[str])], doc_per_query=1000):
+	# Load Model
+	model = train_d2v_model(index.pred_docs_dict)
+	print("Calculating similarity scores with doc2vec...")
+	start_time = time.time()
+	# Predict
+	results = {}
+	for pair in queries:  # (q_id, raw_query)
+		query = pair[1].split()
+		inferred_vector = model.infer_vector(query, alpha=0.025, epochs=model.epochs+20)
+		sims = model.dv.most_similar_cosmul(positive=[inferred_vector], topn=doc_per_query)  # return [(d_id,sim_score)]
+		results[pair[0]] = [(tag, score) for tag, score in sims]
+	print("Calculation and ranking completed in", str(time.time() - start_time)[:6], "seconds")
+	return results

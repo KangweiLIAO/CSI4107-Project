@@ -1,13 +1,15 @@
+import time
 import math
 import retrieval_utils as utils
 from inverted_index import InvertedIndex
 
 
 def similarity_scores(inv_index: InvertedIndex, queries):
+	start_time = time.time()
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
 	for q_id, q_raw in queries:
 		scores_dict[q_id] = []
-		q_terms = utils.preprocess_str(q_raw)[0]  # preprocessing query
+		q_terms = utils.preprocess_str(q_raw)  # preprocessing query
 		qtf_dict: dict[str, int] = {}  # dict[q_term, tf]
 		qtfidf_dict: dict[str, float] = {}  # dict[q_term, tfidf]
 
@@ -26,7 +28,7 @@ def similarity_scores(inv_index: InvertedIndex, queries):
 		q_length = math.sqrt(sum([x ** 2 for x in qtfidf_dict.values()]))  # compute length of query vector
 
 		# compute cosine similarity between the query and all docs:
-		for d_id, d_words in inv_index.docs_dict.items():
+		for d_id, d_words in inv_index.pred_docs_dict.items():
 			score = 0
 			common_terms = list(set(d_words).intersection(q_terms))
 			for term in common_terms:
@@ -39,4 +41,5 @@ def similarity_scores(inv_index: InvertedIndex, queries):
 			scores_dict[q_id].append((d_id, score))
 		sorted_scores = sorted(scores_dict[q_id], key=lambda item: item[1], reverse=True)
 		scores_dict[q_id] = sorted_scores
+	print("Calculation and ranking completed in", str(time.time() - start_time)[:6], "seconds")
 	return scores_dict

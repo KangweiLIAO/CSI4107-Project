@@ -1,5 +1,7 @@
 import re
 import spacy
+from numpy import dot
+from numpy.linalg import norm
 
 nlp = spacy.load('en_core_web_sm', disable=['ner', 'parser'])
 
@@ -48,7 +50,7 @@ def preprocess_str(raw_str: str):
 	str_nlp = nlp(raw_str)
 	# stopwords removal and lemmatization:
 	tmp = [w.lemma_.lower() for w in str_nlp if not (w.is_stop or w.like_url or w.like_num or w.is_space or w.is_punct)]
-	return tmp, str_nlp
+	return tmp
 
 
 def read_documents(file_path: str) -> dict[str, str]:
@@ -109,6 +111,15 @@ def save_results(file_name: str, scores_dict: dict[str, list[(str, float)]], doc
 			file.write(f"{q_id} Q0 {pair[0]} {rank} {pair[1]} Round1\n")
 			rank += 1
 	file.close()
+
+
+def np_cossim(vec1, vec2):
+	"""
+	Calculate the cosine similarity of given vectors (ndarray).
+
+	:return: the cosine similarity of vec1 and vec2
+	"""
+	return dot(vec1, vec2) / (norm(vec1) * norm(vec2))
 
 
 def replace_all(string, items: list[(str, str)]):
