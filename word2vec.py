@@ -36,7 +36,7 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 	:param queries: raw queries with query ids
 	:param topn: how many synonyms add to query [default=3]
 	:param doc_per_query: maintain doc_per_query score records
-	:return:
+	:return: dictionary containing the scores
 	"""
 	model = train_w2v_model(inv_index.pred_docs_dict).wv
 	scores_dict: dict[str, list[(str, float)]] = {}  # dict[q_id, list[(d_id, score)]]
@@ -70,7 +70,7 @@ def get_mean_vector(w2v_model, words):
 
 	:param w2v_model: gensim word2vec model (.wv)
 	:param words:
-	:return:
+	:return: empty list or mean vector
 	"""
 	words = [word for word in words if word in w2v_model.key_to_index]  # remove out-of-vocabulary words
 	if len(words) >= 1:
