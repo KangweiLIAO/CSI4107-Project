@@ -11,6 +11,7 @@ I use doc2vec to ....... During the process, I found..... In the end, I got the 
 
 
 **Aozhuo Zhang (300057882)**
+1. Responsible for **GloVe Algorithm**
 
 
 ## Steps To Run (Python 3.9 required)
@@ -31,10 +32,11 @@ Thirdly, the program could retreve qureies and output the top 10 related Twitter
 
 
 ## Algorithms and Data Structures
-We use three algotithms here. 
+We use four algotithms here. 
 ### TF-IDF
 ### Word2Vec
 ### Doc2Vec
+### GloVe
 
 ## First 10 answers to queries 3 and 20
 
@@ -45,5 +47,8 @@ We use three algotithms here.
 #### Screenshot
 #### MAP and P@10
 ### Doc2Vec Algorithm
+#### Screenshot
+#### MAP and P@10
+### GloVe Algorithm
 #### Screenshot
 #### MAP and P@10
