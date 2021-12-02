@@ -4,6 +4,7 @@ import retrieval_utils as utils
 import doc2vec as d2v_algo
 import word2vec as w2v_algo
 import tfidf as tfidf_algo
+import glove as glv_algo
 from inverted_index import InvertedIndex
 from inverted_index import CTColors
 
@@ -18,7 +19,7 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
+def rank_and_save(inv_index: InvertedIndex, model: str = 'glv'):
 	"""
 	Read queries from file, obtain the scores and save the ranking.
 
@@ -36,6 +37,8 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
 		result = w2v_algo.similarity_scores(inv_index, queries)
 	elif model == 'd2v':
 		result = d2v_algo.similarity_scores(inv_index, queries)
+	elif model == "glv":
+		result = glv_algo.similarity_scores(inv_index, queries)
 	else:
 		result = None  # dict[doc_id, score]
 
