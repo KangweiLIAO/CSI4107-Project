@@ -1,8 +1,9 @@
 # CSI4107 Assignment 2
 ## Teamwork Distribution (marking scheme)
 **Langqing Zou (300035036)**
-1. Responsible for **Doc2Vec Algorithm**
-2. Responsible for **Writing final report**
+1. Responsible for **TF-IDF Algorithm**
+2. Responsible for **Doc2Vec Algorithm**
+3. Responsible for **Writing final report**
 
 I use doc2vec to ....... During the process, I found..... In the end, I got the results of ....
 
