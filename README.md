@@ -5,8 +5,6 @@
 2. Responsible for **Doc2Vec Algorithm**
 3. Responsible for **Writing final report**
 
-I use doc2vec to ....... During the process, I found..... In the end, I got the results of ....
-
 **Kangwei Liao (8568800)**
 1. Responsible for **TF-IDF Algorithm**
 2. Responsible for **Word2Vec Algorithm**
@@ -106,7 +104,7 @@ compared with ```results.txt```I got. MAP and P@10 are shown in the below sectio
 **MAP and P@10**\
 
 ## Discussion
-The MAP and P@10 from **Doc2Vec** is not well so I search some resources online and have a conclusion. 
+The MAP and P@10 from **Doc2Vec** is bad so I search some resources online and have a conclusion. 
 The *inverted-index vocabulary* we used is removing all stop-words, so number of terms in each document is small. 
 Actually, the average number of terms in each document is around 8. 
 That might be the reason why **Doc2Vec** performs worse than **Word2Vec**. 
