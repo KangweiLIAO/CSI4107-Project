@@ -4,8 +4,9 @@ import retrieval_utils as utils
 import doc2vec as d2v_algo
 import word2vec as w2v_algo
 import tfidf as tfidf_algo
-from inverted_index import InvertedIndex
-from inverted_index import CTColors
+import glove as glv_algo
+from ir_index import IRIndex
+from retrieval_utils import CTColors
 
 RES_PATH = os.getcwd() + "/res/"
 OUTPUT_PATH = os.getcwd() + "/out/"
@@ -18,11 +19,11 @@ RESULT_FILENAME = "Results.txt"
 N_MOST_DOC = 1000  # return n most relevant documents for each query
 
 
-def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
+def rank_and_save(ir_index: IRIndex, model: str = 'd2v'):
 	"""
 	Read queries from file, obtain the scores and save the ranking.
 
-	:param inv_index: inverted index containing the documents
+	:param ir_index: inverted index containing the documents
 	:param model: algorithm used to obtain similarity scores (cosine[default], word2vec)
 	"""
 
@@ -30,19 +31,20 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
 	queries: list[(str, list[str])] = utils.read_queries(RES_PATH + QUERIES_FILENAME)
 	# Applying models
 	if model == 'tfidf':
-		print("Calculating TF-IDF vectors...")
-		result = tfidf_algo.similarity_scores(inv_index, queries)
+		result = tfidf_algo.similarity_scores(ir_index, queries, doc_per_query=N_MOST_DOC)
 	elif model == 'w2v':
-		result = w2v_algo.similarity_scores(inv_index, queries)
+		result = w2v_algo.similarity_scores(ir_index, queries, doc_per_query=N_MOST_DOC)
 	elif model == 'd2v':
-		result = d2v_algo.similarity_scores(inv_index, queries)
+		result = d2v_algo.similarity_scores(ir_index, queries, doc_per_query=N_MOST_DOC)
+	elif model == "glv":
+		result = glv_algo.similarity_scores(ir_index, queries, doc_per_query=N_MOST_DOC)
 	else:
 		result = None  # dict[doc_id, score]
 
 	# prepare to save the results:
 	try:
 		os.mkdir(OUTPUT_PATH)  # Try create '/out' directory
-	except FileExistsError as e:
+	except FileExistsError:
 		pass  # ignore FileExistsError, if '/out' directory exist
 	try:
 		open(OUTPUT_PATH + RESULT_FILENAME)  # detect result file
@@ -59,7 +61,7 @@ def rank_and_save(inv_index: InvertedIndex, model: str = 'd2v'):
 		else:
 			print(f"{CTColors.FAIL}Interrupted by user.{CTColors.ENDC}")
 			exit()  # exit program
-	except FileNotFoundError as e:
+	except FileNotFoundError:
 		# if no old result file found in 'out/' folder:
 		print(f"Generating [{RESULT_FILENAME}] in 'out/' folder...")
 	if result is not None:
@@ -70,14 +72,14 @@ if __name__ == '__main__':
 	# add custom stopwords:
 	utils.add_stopwords(RES_PATH + "StopWords.txt")
 
-	# generate inverted index:
-	start_time = time.time()
 	try:
 		os.mkdir(SAVE_PATH)  # Try create '/saves' directory
 	except FileExistsError as e:
 		pass  # ignore FileExistsError, if '/saves' directory exist
-	print("Preparing inverted index... (~= 100 seconds if no config file (.ii) provided)")
-	index = InvertedIndex(RES_PATH + DOC_FILENAME, SAVE_PATH, RES_PATH + "inverted_index.ii")
+
+	print("Preparing inverted index... (~= 100 seconds if no config files in '/saves' provided)")
+	start_time = time.time()
+	index = IRIndex(RES_PATH + DOC_FILENAME, SAVE_PATH, RES_PATH + "inverted_index.ii")
 	print("Indexing completed in", str(time.time() - start_time)[:8] + " seconds")
 
 	# obtain cosine scores and save them to a result file:
