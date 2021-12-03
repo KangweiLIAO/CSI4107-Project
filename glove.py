@@ -2,7 +2,7 @@ import time
 import numpy as np
 import retrieval_utils as utils
 import gensim.downloader as api
-from inverted_index import InvertedIndex
+from ir_index import IRIndex
 
 pmodel = api.load("glove-twitter-200")
 
@@ -30,10 +30,10 @@ def output(train_data: dict[str, list[str]]):
 		print(s, file=data)
 
 
-def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])], topn=3, doc_per_query=1000):
+def similarity_scores(inv_index: IRIndex, queries: list[(str, list[str])], topn=3, doc_per_query=1000):
 	"""
 	Use the pre-trained glove model and do the query expansion. Finally return a ranked result for input queries on all documents
-	in inv_index.
+	in ir_index.
 
 	:param inv_index: a inverted index object
 	:param queries: raw queries with query ids
@@ -57,7 +57,7 @@ def similarity_scores(inv_index: InvertedIndex, queries: list[(str, list[str])],
 		q_terms += tmp
 
 		q_vec = get_mean_vector(model, q_terms)
-		for d_id, doc in inv_index.pred_docs_dict.items():
+		for d_id, doc in inv_index.docs_dict.items():
 			doc_avg_vec = get_mean_vector(model, doc)
 			if len(doc_avg_vec) > 0:
 				scores_dict[q_id].append((d_id, utils.np_cossim(q_vec, doc_avg_vec)))

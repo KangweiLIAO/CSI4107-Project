@@ -27,6 +27,7 @@ def add_stopwords(stopwords_path: str):
 
 	:param stopwords_path: path to stopwords file
 	"""
+	print("Adding custom stopwords to spacy...")
 	try:
 		custom_stopwords = open(stopwords_path, encoding='utf-8').readlines()
 		# add to nlp default stopwords:
