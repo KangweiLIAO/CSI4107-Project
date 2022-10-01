@@ -1,4 +1,4 @@
-# CSI4107 Assignment 2
+# CSI4107 Project
 ## Teamwork Distribution (marking scheme)
 **Langqing Zou (300035036)**
 1. Responsible for **TF-IDF Algorithm**
